@@ -1,8 +1,23 @@
 # Avalam: Un Challenge Moteur de Jeux
 
-## Règles du jeu d'avalam
+## Histoire
+* **Bruits de couloir...**
+	* “C’était mieux avant, ils ne savent plus réfléchir”
+	* “Il faut des pédagogies actives”
+	* “Pour eux, l’informatique, c’est les jeux vidéo”
+	* “Les TNE, ça ne marche pas en première année”
 
-### Règle de base
+## Objectifs du Projet
+* **Formalisation & Modélisation**
+	* Définition d’une terminologie
+	* Passage de l’exemple à la règle
+* **Algorithmique**
+* **Programmation en C**
+* **Travail par projet, en équipe**
+* **Valorisation possible pour la communication de l’IG2i**
+
+## Règles du Jeu d'Avalam
+### Règle de Base
 Chaque joueur choisit sa couleur. Le but du jeu est de constituer un maximum de tours de 1 à 5 pions, jamais plus, surmontées par un pion de sa couleur. 
 Un joueur est le propriétaire d'une tour lorsqu'un pion de sa couleur en occupe le sommet. Un pion isolé constitue également une tour. 
 
@@ -27,5 +42,5 @@ Attention! Qu'une tour comporte 1,2,... ou 5 pions, elle vaut toujours UN point.
 Chaque joueur choisit sa couleur. Le plateau est vide et les joueur disposent alternativement un pion (quelle qu'en soit la couleur) sur le plateau. 
 Les joueurs essaiant de se préparer une stratégie. Le 49ème troue peut se trouver n'importe où.
 
-## Plateau de Jeu
+### Plateau de Jeu
 Taille réelle = 30 x 25cm
