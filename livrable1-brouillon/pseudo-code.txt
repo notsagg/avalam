@@ -7,9 +7,16 @@ Début
 
 dbg <- false // mode debug
 gagnee <- false // si la partie est gagnée
-scoreJ <- 0 // le score des jaunes
-scoreR <- 0 // le score des rouges
 trait <- 0 // 0 pour J, 1 pour R
+
+coupOrigine : octet
+coupDestination : octet
+
+plateau : T_Position
+coupPossible : T_listeCoups
+score : T_Score
+
+plateau <- getPositionInitiale() //initialisation de la partie
 
 // répéter tant que personne n'a gagnée la partie
 tant que (!gagnee) faire
@@ -21,22 +28,33 @@ tant que (!gagnee) faire
 	coupOrigine <- Lire()
 	Afficher("Destination pile à déplacer: ")
 	coupDestination <- Lire()
+	plateau <- jouerCoup(plateau, coupOrigine, coupDestination)
 
 	// mettre à jour le score
-	si (trait) alors
-		scoreR += 1 // a voir pour l'increment de 1
-	sinon
-		scoreJ += 1 // a voir pour l'increment de 1
-	fin si
-
-	// enregistrer le déplacement dans le fichier standalone.js
-	fichierJson <- (coupDestination, score)
+	score <- evaluerScore(plateau)
 
 	// change le trait
 	trait <- (trait) ? 0 : 1
 
+	// enregistrer le déplacement dans le fichier standalone.js
+	historique.json //creation du fichier
+	ecriture	(	"traiterJson({
+					"trait":trait
+					"scoreJ":score.nbJ
+					"scoreJ5":nbJ5
+					"scoreR":nbR
+					"scoreR5":nbR5
+					"cols":["
+					Pour i allant de 1 a NBCASE faire
+						"{"nb":i,"couleur":trait}"
+					Fin_Pour
+					"]
+					});"
+					)
+
 	// terminer la partie si un joueur a gagné
-	si () alors
+	coupPossible <- getCoupsLegaux(plateau)
+	si (coupPossible.nb == 0) alors
 		gagne <- vrai
 	fin si
 
