@@ -1,5 +1,8 @@
-# installer git
+# 1. créez vous un compte GitHub
+# 2. envoyez moi votre pseudo pour que je vous rajoute comme contributeur au projet avalam
+
+# 3. installer git
 sudo apt install git-all
 
-# cloner le repository de travail avalam
+# 4. clonez le repository de travail avalam
 git clone https://github.com/notsagg/avalam.git
