@@ -5,39 +5,60 @@ Sorties: Un fichier standalone.js contenant la position et le score en format JS
 
 Début
 
+
 dbg <- false // mode debug
 gagnee <- false // si la partie est gagnée
 scoreJ <- 0 // le score des jaunes
 scoreR <- 0 // le score des rouges
 trait <- 0 // 0 pour J, 1 pour R
 
+//###########
+pos <- getPositionInitiale()
+//#############"
+
+
 // répéter tant que personne n'a gagnée la partie
 tant que (!gagnee) faire
 	// affichage la couleur a jouer
 	Afficher("Au tour des " (trait) ? "rouge" : "jaune")
 
-	// récupérer l'origine et destination de la pile à déplacer
-	Afficher("Position pile à déplacer: ")
-	coupOrigine <- Lire()
-	Afficher("Destination pile à déplacer: ")
-	coupDestination <- Lire()
+	faire
+		// récupérer l'origine et destination de la pile à déplacer
+		Afficher("Position pile à déplacer: ")
+		coupOrigine <- Lire()
+		Afficher("Destination pile à déplacer: ")
+		coupDestination <- Lire()
+	Tant que estValide(pos,coupOrigine,coupDestination)==0
+	
+	
+	//déplacer le pion 
+	pos <- jouerCoup(pos, coupOrigine, coupDestination);
+	//pas besoin de vérifier si le coup est possible, déjà fait dans la fonction
+	
+	//récupérer le score des deux joueurs à un certains moment
+	score <- evaluerScore(pos)
+	
 
-	// mettre à jour le score
-	si (trait) alors
-		scoreR += 1 // a voir pour l'increment de 1
-	sinon
-		scoreJ += 1 // a voir pour l'increment de 1
-	fin si
+
 
 	// enregistrer le déplacement dans le fichier standalone.js
-	fichierJson <- (coupDestination, score)
+	Si (trait) alors
+		fichierJson <- (coupDestination, score.nbR)
+	Sinon
+		fichierJson <- (coupDestination, score.nbJ)
+	finSi
 
 	// change le trait
-	trait <- (trait) ? 0 : 1
+	Si (trait == 1)alors
+		trait <- 0
+	Sinon
+		trait <- 1
+	finSi
 
-	// terminer la partie si un joueur a gagné
-	si () alors
-		gagne <- vrai
+	// terminer la partie si un joueur a gagné => (nb coups légaux == 0)
+	liste_coup_legaux <- getCoupLegaux(pos)
+	si (liste_coup_legaux.nb==0) alors
+		gagne <- vrai //trait à gagné
 	fin si
 
 fin tant que
