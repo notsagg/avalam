@@ -1,10 +1,45 @@
-Nom: standalone
+Nom: standalone.exe
 Principe: Produire des fichiers standalone.js contenant la position des pions et le score
 Entrées: Coup joués J (jaune) puis R (rouge)
 Sorties: Un fichier standalone.js contenant la position et le score en format JSON
 
 Début
 
+dbg <- false // mode debug
+gagnee <- false // si la partie est gagnée
+scoreJ <- 0 // le score des jaunes
+scoreR <- 0 // le score des rouges
+trait <- 0 // 0 pour J, 1 pour R
 
+// répéter tant que personne n'a gagnée la partie
+tant que (!gagnee) faire
+	// affichage la couleur a jouer
+	Afficher("Au tour des " (trait) ? "rouge" : "jaune")
+
+	// récupérer l'origine et destination de la pile à déplacer
+	Afficher("Position pile à déplacer: ")
+	coupOrigine <- Lire()
+	Afficher("Destination pile à déplacer: ")
+	coupDestination <- Lire()
+
+	// mettre à jour le score
+	si (trait) alors
+		scoreR += 1 // a voir pour l'increment de 1
+	sinon
+		scoreJ += 1 // a voir pour l'increment de 1
+	fin si
+
+	// enregistrer le déplacement dans le fichier standalone.js
+	fichierJson <- (coupDestination, score)
+
+	// change le trait
+	trait <- (trait) ? 0 : 1
+
+	// terminer la partie si un joueur a gagné
+	si () alors
+		gagne <- vrai
+	fin si
+
+fin tant que
 
 Fin
