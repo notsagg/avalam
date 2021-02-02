@@ -1,0 +1,5 @@
+# installer git
+sudo apt install git-all
+
+# cloner le repository de travail avalam
+git clone https://github.com/notsagg/avalam.git
