@@ -1,0 +1,10 @@
+Nom: standalone
+Principe: Produire des fichiers standalone.js contenant la position des pions et le score
+Entrées: Coup joués J (jaune) puis R (rouge)
+Sorties: Un fichier standalone.js contenant la position et le score en format JSON
+
+Début
+
+
+
+Fin
