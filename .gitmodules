@@ -1,0 +1,3 @@
+[submodule "livrable1/build/lib/cJSON"]
+	path = livrable1/build/lib/cJSON
+	url = https://github.com/DaveGamble/cJSON.git
