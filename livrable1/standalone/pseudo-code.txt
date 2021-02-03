@@ -6,45 +6,45 @@ Sorties: Un fichier standalone.js contenant la position et le score en format JS
 Début
 
 dbg <- false // mode debug
-gagnee <- false // si la partie est gagnée
-trait <- 0 // 0 pour J, 1 pour R
+trait <- 0 // 0 pour jaune, 1 pour rouge
+score: T_Score = { 0, 0 } // score des rouges et jaunes
 
-coupOrigine: octet
-coupDestination: octet
+// 1. créer le fichier standalone.json
+fichier <- Ficher("standalone.js")
 
-pos: T_Position
-coupPossible: T_listeCoups
-score: T_Score
+// 2. récupérer la position initiale
+pos: T_Position = getPositionInitiale()
 
-pos <- getPositionInitiale() // initialisation de la partie
+// 3. tant qu'aucun joueur n'a gagné
+Tant que (getCoupsLegaux(pos).nb != 0) faire
+ 	coupOrigine: Octet, coupDestination: Octet
 
-// répéter tant que personne n'a gagnée la partie
-tant que (!gagnee) faire
-	// affichage la couleur a jouer
+	// a. affichage la couleur a jouer
 	Afficher("Au tour des " (trait) ? "rouge" : "jaune")
 
+	// b. récupérer l'origine et la destination de la pile à déplacer
 	faire
 		// récupérer l'origine et destination de la pile à déplacer
 		Afficher("Position pile à déplacer: ")
 		coupOrigine <- Lire()
 		Afficher("Destination pile à déplacer: ")
 		coupDestination <- Lire()
-	Tant que !estValide(pos,coupOrigine,coupDestination)	
+	Tant que !estValide(pos,coupOrigine,coupDestination)
 
-	// déplacer le pion 
-	pos <- jouerCoup(pos, coupOrigine, coupDestination);
+	// c. déplacer le pion joué
+	pos <- jouerCoup(pos, coupOrigine, coupDestination)
 
-	// récupérer le score des deux joueurs à un certains moment
+	// d. changer le trait
+	si (trait == 1)alors
+		trait <- 0
+	sinon
+		trait <- 1
+	fin si
+
+	// e. mettre à jour le score pour les deux joueurs
 	score <- evaluerScore(pos)
 
-	// change le trait
-	Si (trait == 1)alors
-		trait <- 0
-	Sinon
-		trait <- 1
-	finSi
-
-	// enregistrer le déplacement dans le fichier standalone.js
+	// f. enregistrer le déplacement dans le fichier standalone.js
 	standalone.json // creation du fichier
 	Ecriture("traiterJson({
 				"trait":trait
@@ -59,13 +59,6 @@ tant que (!gagnee) faire
 				"]
 			});"
 	)
-
-	// terminer la partie si un joueur a gagné
-	coupPossible <- getCoupsLegaux(plateau)
-	si (!coupPossible.nb) alors
-		gagne <- vrai
-	fin si
-
-fin tant que
+Fin tant que
 
 Fin
