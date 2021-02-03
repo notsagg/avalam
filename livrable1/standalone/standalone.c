@@ -8,7 +8,7 @@
 int main() {
     FILE *fichier; // flux d'écriture pour le fichier standalone.js
     int trait = 0; // 0 pour jaune, 1 pour rouge
-    T_Score score = { 0, 0 }; // score des rouges et jaunes
+    T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
 
     // 1. créer le fichier standalone.js
     fichier = fopen(FICHIER_NOM, FICHIER_PERM);
