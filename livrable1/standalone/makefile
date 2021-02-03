@@ -1,10 +1,10 @@
-all: dep install 
+all: dep install
 
 # Pour activer le mode debugage, il faut définir __DEBUG__
 debug: DEBUG=-D'__DEBUG__'
 debug: dep install
 
-dep: 
+dep:
 	cd ../libavalam; make
 
 install: standalone.static standalone.exe
@@ -14,13 +14,13 @@ install: standalone.static standalone.exe
 LIB=-L../build/lib
 INC=-I../include
 
-standalone.exe:standalone.c 
+standalone.exe:standalone.c
 	gcc $(DEBUG) $(LIB) $(INC) standalone.c -o standalone.exe -lavalam
 
-standalone.static:standalone.c 
+standalone.static:standalone.c
 	gcc -static $(DEBUG) $(INC) $(LIB)  standalone.c -o standalone.static  -lavalam
 
-clean: 
+clean:
 	rm -rf standalone.exe standalone.static
 	rm -rf ../build/standalone.*
 

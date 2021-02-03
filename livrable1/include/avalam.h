@@ -1,8 +1,7 @@
 #define FAUX 0
 #define VRAI 1
 
-
-// Vainqueurs des parties et joueurs au trait 
+// Vainqueurs des parties et joueurs au trait
 #define EGALITE 0
 #define VIDE 0
 #define JAU 1
@@ -64,7 +63,7 @@
 	#define whojd(p)
 #endif
 
-//verif appels systèmes 
+//verif appels systèmes
 
 #define CHECK_IF(sts,val,msg) \
 if ((sts) == (val)) {fprintf(stderr,"erreur appel systeme\n");perror(msg); exit(-1);}
@@ -72,48 +71,47 @@ if ((sts) == (val)) {fprintf(stderr,"erreur appel systeme\n");perror(msg); exit(
 #define CHECK_DIF(sts,val,msg) \
 if ((sts) != (val)) {fprintf(stderr,"erreur appel systeme\n");perror(msg); exit(-1);}
 
-typedef unsigned char octet; 
+typedef unsigned char octet;
 
 typedef struct {
-	octet nbJ; 	octet nbJ5; // total et piles de 5 pour les jaunes 
-	octet nbR;	octet nbR5; // total et piles de 5 pour les rouges 
+	octet nbJ; 	octet nbJ5; // total et piles de 5 pour les jaunes
+	octet nbR;	octet nbR5; // total et piles de 5 pour les rouges
 } T_Score;
 
 typedef struct {
-	octet nb; 
+	octet nb;
 	octet cases[8]; // il peut y en avoir moins... ils vaudront 0
-} T_Voisins; 
+} T_Voisins;
 
 typedef struct {
-	octet nb; 			// nb d'elts dans la colonne 
-	octet couleur;  // couleur du sommet 
-} T_Colonne; 
+	octet nb; 			// nb d'elts dans la colonne
+	octet couleur;  // couleur du sommet
+} T_Colonne;
 
-typedef struct { 
-	octet trait; 
+typedef struct {
+	octet trait;
 	// octet numCoup; // A ajouter
 	T_Colonne cols[NBCASES];
 } T_Position;
 
 typedef struct {
-	octet origine; 
+	octet origine;
 	octet destination;
 } T_Coup;
 
 typedef struct {
-	int nb; 
-	T_Coup coups[8*NBCASES]; 
-} T_ListeCoups; 
+	int nb;
+	T_Coup coups[8*NBCASES];
+} T_ListeCoups;
 
-octet nbVoisins(octet numCase); 
-T_Voisins getVoisins(octet numCase); 
-void listerVoisins(octet numCase); 
+octet nbVoisins(octet numCase);
+T_Voisins getVoisins(octet numCase);
+void listerVoisins(octet numCase);
 T_Position getPositionInitiale();
-void afficherPosition(T_Position p); 
+void afficherPosition(T_Position p);
 void addCoup(T_ListeCoups * pL, octet origine, octet destination);
 void afficherListeCoups(T_ListeCoups l);
 T_Position jouerCoup(T_Position p, octet origine, octet destination) ;
-T_ListeCoups getCoupsLegaux(T_Position p) ; 
+T_ListeCoups getCoupsLegaux(T_Position p) ;
 T_Score evaluerScore(T_Position p);
-void afficherScore(T_Score s); 
-
+void afficherScore(T_Score s);
