@@ -42,10 +42,21 @@ int main() {
         score = evaluerScore(pos);
 
         // f. enregistrer le déplacement dans le fichier standalone.js en format json
-            // - créer l'entete du fichier json
-        char *jsonString = ""; // string json final
+    
+        fprintf(fichier, "traiterJson({\n");
+        fprintf(fichier, "%s:%d,\n",STR_TURN,trait);
 
-            // - écrire le string json dans le fichier standalone.js
-        fputs(jsonString, fichier);
+        fprintf(fichier, "%s:%d,\n",STR_SCORE_J,score.nbJ);
+        fprintf(fichier, "%s:%d,\n",STR_SCORE_J5,score.nbJ5);
+        fprintf(fichier, "%s:%d,\n",STR_SCORE_R,score.nbR);
+        fprintf(fichier, "%s:%d,\n",STR_SCORE_R5,score.nbR5);
+        fprintf(fichier, "%s:[\n",STR_COLS);
+        //il faut balayer pos.cols
+        for (int i = 0; i < NBCASES-1; ++i)
+        {
+            fprintf(fichier, "\t{%s:%d,%s:%d},\n",STR_NB,pos.cols[i].nb,STR_COULEUR,pos.cols[i].couleur);
+        }
+        fprintf(fichier, "\t{%s:%d,%s:%d}\n]\n});",STR_NB,pos.cols[NBCASES].nb,STR_COULEUR,pos.cols[NBCASES].couleur);
+        fclose(fichier);
     }
 }
