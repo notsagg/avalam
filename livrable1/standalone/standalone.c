@@ -5,17 +5,20 @@
 #include <avalam.h>
 #include <topologie.h>
 
-#define DEFAULT_FICHIER_NOM "standalone.js"
+#define DEFAULT_FICHIER_NOM "refresh-data.js"
 #define DEFAULT_EXTENSION ".js"
 #define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
 
+void creationjs(T_Position pos, T_Score score, int trait);
+char fichierDestination[DEFAULT_JSON_TAILLE] ="../web/exemples/";
+
 int main() {
-    FILE *fichier; // flux d'écriture pour le fichier standalone.js
-    cJSON *root, *cols, *col; // cJSON
+
     char *nomFichier = malloc(sizeof(char*));
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     int trait = 0; // 0 pour jaune, 1 pour rouge
+    octet coupOrigine = 0, coupDestination = 0;
 
     // 1. demander à l'utilisateur le nom du fichier .js à écrire
     char option;
@@ -33,13 +36,21 @@ int main() {
         return EXIT_FAILURE;
     }
     printf("Le nom du fichier de sortie sera: %s\n\n", nomFichier);
-
+    
+    
+    //char fichierDestination[DEFAULT_JSON_TAILLE] ="../web/exemples/";
+    strcat(fichierDestination, nomFichier);
+    printf("%s\n", fichierDestination);
+    
+    
+	
     // 2. récupérer la position initiale
     T_Position pos = getPositionInitiale();
+    creationjs(pos, score, trait);
+    
 
     // 3. tant qu'aucun joueur n'a gagné
     while (getCoupsLegaux(pos).nb != 0) {
-        octet coupOrigine, coupDestination;
 
         // a. affichage de la couleur à jouer (jaune ou rouge)
         printf(" -- Au tour des %s --\n", (trait) ? "Rouge (R)" : "Jaune (J)");
@@ -61,49 +72,56 @@ int main() {
 
         // e. mettre à jour le score pour les deux joueurs
         score = evaluerScore(pos);
-
-        // f. création d'un string json enregistrant le score et la position des pions
-        root = cJSON_CreateObject(); // object json racine
-        cols = cJSON_CreateArray(); // tableau json des positions
-
-            // - ajout du score
-        cJSON_AddItemToObject(root, "trait", cJSON_CreateNumber(trait));
-        cJSON_AddItemToObject(root, "scoreJ", cJSON_CreateNumber(score.nbJ));
-        cJSON_AddItemToObject(root, "scoreJ5", cJSON_CreateNumber(score.nbJ5));
-        cJSON_AddItemToObject(root, "scoreR", cJSON_CreateNumber(score.nbR));
-        cJSON_AddItemToObject(root, "scoreR5", cJSON_CreateNumber(score.nbR5));
-
-            // - ajout de la position des pions
-        cJSON_AddItemToObject(root, "cols", cols);
-
-        for (unsigned int i = 0; i < NBCASES; ++i) {
-            cJSON_AddItemToArray(cols, col = cJSON_CreateObject());
-            cJSON_AddItemToObject(col, "nb", cJSON_CreateNumber(pos.cols[i].nb));
-            cJSON_AddItemToObject(col, "couleur", cJSON_CreateNumber(pos.cols[i].couleur));
-        }
-
-            // - ajout de l'entete au fichier json
-        char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
-        strcat(jsonString, cJSON_Print(root));
-        strcat(jsonString, ");\n");
-
-        // g. enregistrer le string json dans le fichier standalone.js
-            // - ouvrir ou créer le fichier standalone.js
-        fichier = fopen(nomFichier, FICHIER_PERM);
-
-            // - vérifier qu'on peut y écrire puis écrire
-        if (fichier == NULL) {
-            printf("Erreur d'ouverture du fichier %s", nomFichier);
-        } else {
-            fprintf(fichier, "%s", jsonString);
-        }
-
-        // h. nettoyage
-        cJSON_Delete(root);
-        fclose(fichier);
+        
+        creationjs(pos, score, trait);
     }
 
     // 4. nettoyage global
     free(nomFichier);
     return EXIT_SUCCESS;
+}
+
+void creationjs(T_Position pos, T_Score score, int trait){
+
+	FILE *fichier; // flux d'écriture pour le fichier standalone.js
+	cJSON *root, *cols, *col; // cJSON
+
+	//création d'un string json enregistrant le score et la position des pions
+    root = cJSON_CreateObject(); // object json racine
+    cols = cJSON_CreateArray(); // tableau json des positions
+    
+    // - ajout du score
+    cJSON_AddItemToObject(root, "trait", cJSON_CreateNumber(trait));
+    cJSON_AddItemToObject(root, "scoreJ", cJSON_CreateNumber(score.nbJ));
+    cJSON_AddItemToObject(root, "scoreJ5", cJSON_CreateNumber(score.nbJ5));
+    cJSON_AddItemToObject(root, "scoreR", cJSON_CreateNumber(score.nbR));
+    cJSON_AddItemToObject(root, "scoreR5", cJSON_CreateNumber(score.nbR5));
+    
+    // - ajout de la position des pions
+    cJSON_AddItemToObject(root, "cols", cols);
+    for (unsigned int i = 0; i < NBCASES; ++i) {
+        cJSON_AddItemToArray(cols, col = cJSON_CreateObject());
+        cJSON_AddItemToObject(col, "nb", cJSON_CreateNumber(pos.cols[i].nb));
+        cJSON_AddItemToObject(col, "couleur", cJSON_CreateNumber(pos.cols[i].couleur));
+    }
+    
+    // - ajout de l'entete au fichier json
+    char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
+    strcat(jsonString, cJSON_Print(root));
+    strcat(jsonString, ");\n");
+    
+    // g. enregistrer le string json dans le fichier standalone.js
+    // - ouvrir ou créer le fichier standalone.js
+    fichier = fopen(fichierDestination, FICHIER_PERM);
+
+    // - vérifier qu'on peut y écrire puis écrire
+    if (fichier == NULL) {
+        printf("Erreur d'ouverture du fichier");
+    } else {
+        fprintf(fichier, "%s", jsonString);
+    }
+    
+    // h. nettoyage
+    cJSON_Delete(root);
+    fclose(fichier);
 }
