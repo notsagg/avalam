@@ -6,6 +6,7 @@
 #include <topologie.h>
 
 #define DEFAULT_FICHIER_NOM "standalone.js"
+#define DEFAULT_EXTENSION ".js"
 #define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
 
@@ -24,6 +25,7 @@ int main() {
     if (option == 'Y') {
         printf("Comment souhaitez vous le nommer: ");
         scanf("%s", nomFichier);
+        strcat(nomFichier, DEFAULT_EXTENSION);
     } else if (option == 'n') {
         nomFichier = DEFAULT_FICHIER_NOM;
     } else {
