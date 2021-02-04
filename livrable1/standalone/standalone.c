@@ -15,17 +15,10 @@ int main() {
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     int trait = 0; // 0 pour jaune, 1 pour rouge
 
-    // 1. créer le fichier standalone.js
-    fichier = fopen(FICHIER_NOM, FICHIER_PERM);
-    if (fichier == NULL) {
-        printf("Erreur d'ouverture du fichier %s", FICHIER_NOM);
-        return EXIT_FAILURE;
-    }
-
-    // 2. récupérer la position initiale
+    // 1. récupérer la position initiale
     T_Position pos = getPositionInitiale();
 
-    // 3. tant qu'aucun joueur n'a gagné
+    // 2. tant qu'aucun joueur n'a gagné
     while (getCoupsLegaux(pos).nb != 0) {
         octet coupOrigine, coupDestination;
 
@@ -50,7 +43,7 @@ int main() {
         // e. mettre à jour le score pour les deux joueurs
         score = evaluerScore(pos);
 
-        // f. enregistrer le déplacement dans le fichier standalone.js en format json
+        // f. création d'un string json enregistrant le score et la position des pions
         root = cJSON_CreateObject(); // object json racine
         cols = cJSON_CreateArray(); // tableau json des positions
 
@@ -70,18 +63,26 @@ int main() {
             cJSON_AddItemToObject(col, "couleur", cJSON_CreateNumber(pos.cols[i].couleur));
         }
 
-            // - ajouter l'entete au fichier json
+            // - ajout de l'entete au fichier json
         char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
         strcat(jsonString, cJSON_Print(root));
-        printf("Ici\n");
-        strcat(jsonString, ");");
-        cJSON_Delete(root);
+        strcat(jsonString, ");\n");
 
-            // - écrire le string json dans le fichier standalone.js
-        fprintf(fichier, "traiterJson({\n");
+        // g. enregistrer le string json dans le fichier standalone.js
+            // - ouvrir ou créer le fichier standalone.js
+        fichier = fopen(FICHIER_NOM, FICHIER_PERM);
+
+            // - vérifier qu'on peut y écrire puis écrire
+        if (fichier == NULL) {
+            printf("Erreur d'ouverture du fichier %s", FICHIER_NOM);
+        } else {
+            fprintf(fichier, "%s", jsonString);
+        }
+
+        // h. nettoyage
+        cJSON_Delete(root);
+        fclose(fichier);
     }
 
-    // 4. nettoyage
-    fclose(fichier);
     return EXIT_SUCCESS;
 }
