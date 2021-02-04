@@ -5,20 +5,37 @@
 #include <avalam.h>
 #include <topologie.h>
 
-#define FICHIER_NOM "standalone.js"
+#define DEFAULT_FICHIER_NOM "standalone.js"
 #define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
 
 int main() {
     FILE *fichier; // flux d'écriture pour le fichier standalone.js
     cJSON *root, *cols, *col; // cJSON
+    char *nomFichier = malloc(sizeof(char*));
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     int trait = 0; // 0 pour jaune, 1 pour rouge
 
-    // 1. récupérer la position initiale
+    // 1. demander à l'utilisateur le nom du fichier .js à écrire
+    char option;
+    printf("Souhaitez vous nommer le fichier de sortie? [Y/n] ");
+    scanf("%c", &option);
+
+    if (option == 'Y') {
+        printf("Comment souhaitez vous le nommer: ");
+        scanf("%s", nomFichier);
+    } else if (option == 'n') {
+        nomFichier = DEFAULT_FICHIER_NOM;
+    } else {
+        printf("erreur: entrée non définie\n");
+        return EXIT_FAILURE;
+    }
+    printf("Le nom du fichier de sortie sera: %s\n\n", nomFichier);
+
+    // 2. récupérer la position initiale
     T_Position pos = getPositionInitiale();
 
-    // 2. tant qu'aucun joueur n'a gagné
+    // 3. tant qu'aucun joueur n'a gagné
     while (getCoupsLegaux(pos).nb != 0) {
         octet coupOrigine, coupDestination;
 
@@ -70,11 +87,11 @@ int main() {
 
         // g. enregistrer le string json dans le fichier standalone.js
             // - ouvrir ou créer le fichier standalone.js
-        fichier = fopen(FICHIER_NOM, FICHIER_PERM);
+        fichier = fopen(nomFichier, FICHIER_PERM);
 
             // - vérifier qu'on peut y écrire puis écrire
         if (fichier == NULL) {
-            printf("Erreur d'ouverture du fichier %s", FICHIER_NOM);
+            printf("Erreur d'ouverture du fichier %s", nomFichier);
         } else {
             fprintf(fichier, "%s", jsonString);
         }
@@ -84,5 +101,7 @@ int main() {
         fclose(fichier);
     }
 
+    // 4. nettoyage global
+    free(nomFichier);
     return EXIT_SUCCESS;
 }
