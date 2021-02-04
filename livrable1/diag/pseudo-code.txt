@@ -1,0 +1,63 @@
+Nom: diag.exe
+Principe: Produire un fichier diag.js contenant la position et la description
+Entrées: Un numéro de diagramme, une position de type "FEN"
+Sorties: Un fichier diag.js contenant la position et la description en format JSON
+
+Début
+
+Afficher("Nom du fichier à produire: ")
+nomFichier <- Lire()
+
+Afficher("Chaine de description: ")
+notes <- Lire()
+
+Afficher("Fen: ")
+fen <- Lire()
+
+// 1. traduire le fen en trait
+i: Entier <- 0
+tant que fen[i] != ' ' alors
+    i += 1
+fin tant que
+
+si fen[i+1] == 'j' alors
+    trait = 1
+sinon si fen[i+1] == 'r' alors
+    trait = 2
+sinon
+    Erreur()
+fin si
+
+// 2. récupérer numDiag
+numDiag <- ...
+
+// 3. écrire l'information dans le fichier json
+fichierJSON.trait <- trait
+fichierJSON.numDiag <- numDiag
+fichierJSON.notes <- notes
+
+// 4. traduire le fen en cols puis écrire
+Pour i allant de 0 à ... tant que fen[i] != ' ' faire
+    // est chiffre
+    tant que isdigit(fen[i]) faire
+        // fenD += fen[i]
+        fichierJSON.cols += (nb: fen[i].versInt(), couleur: 0)
+        i += 1
+    fin tant que
+
+    // est minuscule
+    tant que estMin(fen[i]) faire
+        // fenJ += fen[i]
+        fichierJSON.cols += (nb: fen[i].versInt(), couleur: 1)
+        i += 1
+    fin tant que
+
+    // est majuscule
+    tant que estMaj(fen[i]) faire
+        // fenR += fen[i]
+        fichierJSON.cols += (nb: fen[i].versInt(), couleur: 2)
+        i += 1
+    fin tant que
+Fin pour
+
+Fin
