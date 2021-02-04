@@ -5,44 +5,32 @@
 #include <avalam.h>
 #include <topologie.h>
 
-#define DEFAULT_FICHIER_NOM "refresh-data.js"
+#define DEFAULT_FICHIER_NOM "../web/exemples/refresh-data.js"
 #define DEFAULT_EXTENSION ".js"
 #define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
 
 void creationjs(T_Position pos, T_Score score, int trait);
-char fichierDestination[DEFAULT_JSON_TAILLE] ="../web/exemples/";
+char fichierDestination[DEFAULT_JSON_TAILLE]; //="../web/exemples/";
 
-int main() {
+int main(int argc, char * argv[]) {
 
     char *nomFichier = malloc(sizeof(char*));
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     int trait = 0; // 0 pour jaune, 1 pour rouge
     octet coupOrigine = 0, coupDestination = 0;
 
-    // 1. demander à l'utilisateur le nom du fichier .js à écrire
-    char option;
-    printf("Souhaitez vous nommer le fichier de sortie? [Y/n] ");
-    scanf("%c", &option);
-
-    if (option == 'Y') {
-        printf("Comment souhaitez vous le nommer: ");
-        scanf("%s", nomFichier);
-        strcat(nomFichier, DEFAULT_EXTENSION);
-    } else if (option == 'n') {
-        nomFichier = DEFAULT_FICHIER_NOM;
-    } else {
-        printf("erreur: entrée non définie\n");
-        return EXIT_FAILURE;
+    switch(argc-1){
+    	case 1:
+    		nomFichier = argv[1];
+    		break;
+    	default:
+    		nomFichier = DEFAULT_FICHIER_NOM;
+    		break;
     }
-    printf("Le nom du fichier de sortie sera: %s\n\n", nomFichier);
     
-    
-    //char fichierDestination[DEFAULT_JSON_TAILLE] ="../web/exemples/";
     strcat(fichierDestination, nomFichier);
-    printf("%s\n", fichierDestination);
-    
-    
+    printf("Le fichier sera dans: %s\n\n", nomFichier);
 	
     // 2. récupérer la position initiale
     T_Position pos = getPositionInitiale();
