@@ -1,10 +1,10 @@
-all: dep install 
+all: dep install
 
 # Pour activer le mode debugage, il faut définir __DEBUG__
 debug: DEBUG=-D'__DEBUG__'
 debug: dep install
 
-dep: 
+dep:
 	cd ../libavalam; make
 
 install: diag.static diag.exe
@@ -14,15 +14,16 @@ install: diag.static diag.exe
 LIB=-L../build/lib
 INC=-I../include
 
-diag.exe:diag.c 
-	gcc $(DEBUG) $(LIB) $(INC) diag.c -o diag.exe -lavalam
+diag.exe:diag.c
+	gcc $(DEBUG) $(LIB) $(INC) diag.c -o diag.exe -lavalam -lcjson
 
-diag.static:diag.c 
-	gcc -static $(DEBUG) $(INC) $(LIB)  diag.c -o diag.static  -lavalam
+diag.static:diag.c
+	gcc -static $(DEBUG) $(INC) $(LIB)  diag.c -o diag.static  -lavalam -lcjson
 
-clean: 
+clean:
 	rm -rf diag.exe diag.static
 	rm -rf ../build/diag.*
+	rm -rf *.js
 
 cleanall: clean
 	cd ../libavalam; make clean
