@@ -23,6 +23,7 @@ standalone.static:standalone.c
 clean:
 	rm -rf standalone.exe standalone.static
 	rm -rf ../build/standalone.*
+	rm -rf *.js
 
 cleanall: clean
 	cd ../libavalam; make clean
