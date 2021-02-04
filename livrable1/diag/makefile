@@ -15,10 +15,10 @@ LIB=-L../build/lib
 INC=-I../include
 
 diag.exe:diag.c
-	gcc $(DEBUG) $(LIB) $(INC) diag.c -o diag.exe -lavalam -lcjson
+	gcc $(DEBUG) $(LIB) $(INC) diag.c -o diag.exe -lavalam -lcJSON
 
 diag.static:diag.c
-	gcc -static $(DEBUG) $(INC) $(LIB)  diag.c -o diag.static  -lavalam -lcjson
+	gcc -static $(DEBUG) $(INC) $(LIB)  diag.c -o diag.static  -lavalam -lcJSON
 
 clean:
 	rm -rf diag.exe diag.static
