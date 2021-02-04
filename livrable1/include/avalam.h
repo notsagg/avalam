@@ -12,25 +12,27 @@
 #define COLNAME(c) ((c==ROU) ? "rouge" : "jaune")
 
 // Pour les exports JSON ////////////////////////////////////////////
-#define STR_NB "\"nb\""
-#define STR_COULEUR "\"couleur\""
-#define STR_TURN "\"trait\""
-#define STR_COLS "\"cols\""
+#define FICHIER_PERM "w"
 
-#define STR_FEN "\"fen\""
-#define STR_SCORE_J "\"scoreJ\""
-#define STR_SCORE_J5 "\"scoreJ5\""
-#define STR_SCORE_R "\"scoreR\""
-#define STR_SCORE_R5 "\"scoreR5\""
+#define STR_NB "nb"
+#define STR_COULEUR "couleur"
+#define STR_TURN "trait"
+#define STR_COLS "cols"
+
+#define STR_FEN "fen"
+#define STR_SCORE_J "scoreJ"
+#define STR_SCORE_J5 "scoreJ5"
+#define STR_SCORE_R "scoreR"
+#define STR_SCORE_R5 "scoreR5"
 
 #define STR_NUMDIAG "\"numDiag\""
-#define STR_NOTES "\"notes\""
+#define STR_NOTES "notes"
 
 #define STR_COUPS "\"coups\""
 #define STR_ORIGINE "\"o\""
 #define STR_DESTINATION "\"d\""
-#define STR_J "\"j\""
-#define STR_R "\"r\""
+#define STR_J "j"
+#define STR_R "r"
 #define STR_JOUEURS "\"joueurs\""
 
 #define STR_NOM "\"nom\""

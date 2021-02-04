@@ -9,7 +9,6 @@
 // MARK: Constantes
 #define DEFAULT_FICHIER_NOM "diag.js"
 #define DEFAULT_EXTENSION ".js"
-#define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
 #define LG_DESCRIPTION 55
 #define REP_OUI 'Y'
@@ -84,13 +83,13 @@ int main() {
     root = cJSON_CreateObject(); // object json racine
     cols = cJSON_CreateArray(); // tableau json des positions
 
-    cJSON_AddItemToObject(root, "trait", cJSON_CreateNumber(trait));
+    cJSON_AddItemToObject(root, STR_TURN, cJSON_CreateNumber(trait));
     // cJSON_AddItemToObject(root, "numDiag", cJSON_CreateNumber(numDiag));
-    cJSON_AddItemToObject(root, "notes", cJSON_CreateString(description));
-    cJSON_AddItemToObject(root, "fen", cJSON_CreateString(fen));
+    cJSON_AddItemToObject(root, STR_NOTES, cJSON_CreateString(description));
+    cJSON_AddItemToObject(root, STR_FEN, cJSON_CreateString(fen));
 
     // 6. traduction du fen en cols et ajout de la position des pions au json
-    cJSON_AddItemToObject(root, "cols", cols);
+    cJSON_AddItemToObject(root, STR_COLS, cols);
 
     int chiffre[NBCASES];
     unsigned int inc=0, t=0;

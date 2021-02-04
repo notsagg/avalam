@@ -9,8 +9,6 @@
 #define DEFAULT_FICHIER_NOM "../web/exemples/refresh-data.js"
 #define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
-#define REP_OUI 'Y'
-#define REP_NON 'n'
 
 // MARK: Prototypes de fonctions
 void creationjs(T_Position pos, T_Score score, int trait);
@@ -52,7 +50,7 @@ int main(int argc, char * argv[]) {
     // 3. tant qu'aucun joueur n'a gagné
     while (getCoupsLegaux(pos).nb != 0) {
         // a. affichage de la couleur à jouer (jaune ou rouge)
-        printf(" -- Au tour des %s --\n", (trait) ? "Rouge (R)" : "Jaune (J)");
+        printf(" -- Au tour des %s --\n", (trait) ? "Rouge (r)" : "Jaune (j)");
 
         // b. récupérer l'origine et la destination de la pile à déplacer
         do {
@@ -98,18 +96,18 @@ void creationjs(T_Position pos, T_Score score, int trait) {
     cols = cJSON_CreateArray(); // tableau json des positions
 
         // a. ajout du score
-    cJSON_AddItemToObject(root, "trait", cJSON_CreateNumber(trait));
-    cJSON_AddItemToObject(root, "scoreJ", cJSON_CreateNumber(score.nbJ));
-    cJSON_AddItemToObject(root, "scoreJ5", cJSON_CreateNumber(score.nbJ5));
-    cJSON_AddItemToObject(root, "scoreR", cJSON_CreateNumber(score.nbR));
-    cJSON_AddItemToObject(root, "scoreR5", cJSON_CreateNumber(score.nbR5));
+    cJSON_AddItemToObject(root, STR_TURN, cJSON_CreateNumber(trait));
+    cJSON_AddItemToObject(root, STR_SCORE_J, cJSON_CreateNumber(score.nbJ));
+    cJSON_AddItemToObject(root, STR_SCORE_J5, cJSON_CreateNumber(score.nbJ5));
+    cJSON_AddItemToObject(root, STR_SCORE_R, cJSON_CreateNumber(score.nbR));
+    cJSON_AddItemToObject(root, STR_SCORE_R5, cJSON_CreateNumber(score.nbR5));
 
         // b. ajout de la position des pions
-    cJSON_AddItemToObject(root, "cols", cols);
+    cJSON_AddItemToObject(root, STR_COLS, cols);
     for (unsigned int i = 0; i < NBCASES; ++i) {
         cJSON_AddItemToArray(cols, col = cJSON_CreateObject());
-        cJSON_AddItemToObject(col, "nb", cJSON_CreateNumber(pos.cols[i].nb));
-        cJSON_AddItemToObject(col, "couleur", cJSON_CreateNumber(pos.cols[i].couleur));
+        cJSON_AddItemToObject(col, STR_NB, cJSON_CreateNumber(pos.cols[i].nb));
+        cJSON_AddItemToObject(col, STR_COULEUR, cJSON_CreateNumber(pos.cols[i].couleur));
     }
 
         // c. ajout de l'entête au fichier json
