@@ -15,10 +15,10 @@ LIB=-L../build/lib
 INC=-I../include
 
 standalone.exe:standalone.c
-	gcc $(DEBUG) $(LIB) $(INC) standalone.c -o standalone.exe -lavalam
+	gcc $(DEBUG) $(LIB) $(INC) standalone.c -o standalone.exe -lavalam -lcjson
 
 standalone.static:standalone.c
-	gcc -static $(DEBUG) $(INC) $(LIB)  standalone.c -o standalone.static  -lavalam
+	gcc -static $(DEBUG) $(INC) $(LIB)  standalone.c -o standalone.static  -lavalam -lcjson
 
 clean:
 	rm -rf standalone.exe standalone.static
