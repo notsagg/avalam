@@ -17,9 +17,9 @@ libavalam.a : libavalam.c
 	gcc $(DEBUG) $(INC) -c  libavalam.c -o libavalam.o
 	ar qvs libavalam.a  libavalam.o
 
-clean: 
-	rm -rf  libavalam.so libavalam.a libavalam.o
-	rm -rf  ../build/lib/libavalam.so ../build/lib/libavalam.a
+clean:
+	rm -rf  *.so *.a *.o
+	rm -rf  ../build/lib/*.so ../build/lib/*.a
 
 libcJSON.a: ../include/cJSON.c
 	gcc -c ../include/cJSON.c -o ../include/cJSON.o
