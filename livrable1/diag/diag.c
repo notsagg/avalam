@@ -18,10 +18,11 @@
 // MARK: Prototypes de fonctions
 void throw();
 void nvcol(cJSON*, const int, const int);
-int arrIntVersInt(const int*);
+int arrIntVersInt(const int*, const int);
 int nbcarVersInt(const char);
 char *rmNewLine(char *);
 bool fenValide(char *);
+int cversi(const char);
 
 // MARK: Main
 int main() {
@@ -54,7 +55,7 @@ int main() {
     while (option != REP_OUI) {
         printf("Chaine de description (%d caractères max): ", LG_DESCRIPTION);
         fgets(description, LG_DESCRIPTION+1, stdin);
-        rmNewLine(description); // supprimer le \n
+        rmNewLine(description); // suppression du \n
 
         printf("La description sera: %s\n", description);
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
@@ -65,7 +66,7 @@ int main() {
     // 3. demander à l'utilisateur le fen
     printf("Numéro de diagramme de type FEN: ");
     fgets(fen, NBCASES+3, stdin);
-    rmNewLine(fen); // supprimer le \n
+    rmNewLine(fen); // suppression du \n
     // if (!fenValide(fen)) throw(); // vérifier le fen tapé par l'utilisateur
 
     // 4. traduire le fen en trait
@@ -87,6 +88,26 @@ int main() {
     // cJSON_AddItemToObject(root, "numDiag", cJSON_CreateNumber(numDiag));
     cJSON_AddItemToObject(root, "notes", cJSON_CreateString(description));
     cJSON_AddItemToObject(root, "fen", cJSON_CreateString(fen));
+
+    // 6. traduction du fen en cols et ajout de la position des pions au json
+    cJSON_AddItemToObject(root, "cols", cols);
+
+    int chiffre[NBCASES];
+    unsigned int inc=0, t=0;
+    while (fen[inc] != ' ') {
+        // est chiffre
+        if (isdigit(fen[inc])) {
+            int pos = inc;
+            while (isdigit(fen[inc])) chiffre[t++] = cversi(fen[inc++]);
+            for (unsigned int j = pos; j < pos+arrIntVersInt(chiffre, t); ++j) nvcol(cols, 0, 0);
+        }
+
+        // est minuscule
+        if (islower(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 1);
+
+        // est majuscule
+        if (isupper(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 2);
+    }
 
    // 7. ajout de l'entete au fichier json
     char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
@@ -129,9 +150,9 @@ void nvcol(cJSON *array, const int nb, const int couleur) {
 }
 /**
 */
-int arrIntVersInt(const int e[]) {
-    int resultat = 0, i = 0;
-    while (e[i] != '\0') {
+int arrIntVersInt(const int e[], const int taille) {
+    int resultat = 0;
+    for (unsigned int i = 0; i < taille; ++i) {
         resultat *= 10;
         resultat += e[i];
     }
@@ -146,11 +167,11 @@ int nbcarVersInt(const char c) {
         case 't': return 3;
         case 'q': return 4;
         case 'c': return 5;
-        case 'U': nbcarVersInt('u');
-        case 'D': nbcarVersInt('d');
-        case 'T': nbcarVersInt('t');
-        case 'Q': nbcarVersInt('q');
-        case 'C': nbcarVersInt('c');
+        case 'U': return nbcarVersInt('u');
+        case 'D': return nbcarVersInt('d');
+        case 'T': return nbcarVersInt('t');
+        case 'Q': return nbcarVersInt('q');
+        case 'C': return nbcarVersInt('c');
     }
 }
 /**
@@ -163,20 +184,24 @@ char *rmNewLine(char s[]) {
 /**
 */
 bool fenValide(char *fen) {
-    unsigned int i = 0, j = 0, compte = 0;
+    unsigned int i=0, j=0, t=0, compte=0;
     bool valide = false;
 
     // nombre de pions
     int chiffre[NBCASES];
     while (fen[i] != ' ' && fen[i] != '\n') {
-        if (!isdigit(fen[i])) ++compte;
-        else chiffre[j++] = (int)fen[i];
-        ++i;
+        if (!isdigit(fen[i++])) ++compte;
+        else chiffre[j++] = (int)fen[i++]; ++t;
     }
-    compte += arrIntVersInt(chiffre);
+    compte += arrIntVersInt(chiffre, t);
 
     // trait
     if (fen[i+1] == 'r' || fen[i+1] == 'j') valide = true;
 
     return (compte == NBCASES && valide) ? true : false;
+}
+/**
+*/
+int cversi(const char c) {
+    return c-'0';
 }
