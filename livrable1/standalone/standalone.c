@@ -11,12 +11,9 @@
 
 int main() {
     FILE *fichier; // flux d'écriture pour le fichier standalone.js
-    cJSON *root, *cols, *col;
-    root = cJSON_CreateObject(); // object json racine
-    cols = cJSON_CreateArray(); // tableau json des positions
-
-    int trait = 0; // 0 pour jaune, 1 pour rouge
+    cJSON *root, *cols, *col; // cJSON
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
+    int trait = 0; // 0 pour jaune, 1 pour rouge
 
     // 1. créer le fichier standalone.js
     fichier = fopen(FICHIER_NOM, FICHIER_PERM);
@@ -54,6 +51,9 @@ int main() {
         score = evaluerScore(pos);
 
         // f. enregistrer le déplacement dans le fichier standalone.js en format json
+        root = cJSON_CreateObject(); // object json racine
+        cols = cJSON_CreateArray(); // tableau json des positions
+
             // - ajout du score
         cJSON_AddItemToObject(root, "trait", cJSON_CreateNumber(trait));
         cJSON_AddItemToObject(root, "scoreJ", cJSON_CreateNumber(score.nbJ));
@@ -73,11 +73,15 @@ int main() {
             // - ajouter l'entete au fichier json
         char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
         strcat(jsonString, cJSON_Print(root));
+        printf("Ici\n");
         strcat(jsonString, ");");
+        cJSON_Delete(root);
+
+            // - écrire le string json dans le fichier standalone.js
+        fprintf(fichier, "traiterJson({\n");
     }
 
     // 4. nettoyage
-    cJSON_Delete(root);
     fclose(fichier);
     return EXIT_SUCCESS;
 }
