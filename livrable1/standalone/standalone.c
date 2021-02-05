@@ -28,15 +28,20 @@ Notes:
 5. Détecte la fin de la partie et affiche le score à l’écran
 */
 int main(int argc, char * argv[]) {
-    fichierNom = malloc(sizeof(char*)); // nom du fichier d'écriture en sortie
+    fichierNom = (char*)malloc(sizeof(DEFAULT_FICHIER_NOM)); // nom du fichier d'écriture en sortie
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     octet coupOrigine = 0, coupDestination = 0;
     int trait = 0; // 0 pour jaune, 1 pour rouge
 
     // 1. lecture du fichier de sortie à l'execution du programme
     switch (argc-1) {
-    	case 1: fichierNom = argv[1]; break;
-    	default: fichierNom = DEFAULT_FICHIER_NOM; break;
+    	case 1:
+            fichierNom = (char*)realloc(fichierNom, sizeof(argv[1]));
+            strcpy(fichierNom, argv[1]);
+            break;
+    	default:
+            strcpy(fichierNom, DEFAULT_FICHIER_NOM);
+            break;
     }
     printf("Le fichier d'écriture sera: %s\n\n", fichierNom);
 
@@ -76,6 +81,7 @@ int main(int argc, char * argv[]) {
 
     // 4. nettoyage global
     free(fichierNom);
+    fichierNom = NULL;
     return EXIT_SUCCESS;
 }
 
