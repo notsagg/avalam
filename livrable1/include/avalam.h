@@ -13,6 +13,9 @@
 
 // Pour les exports JSON ////////////////////////////////////////////
 #define FICHIER_PERM "w"
+#define JS_ENTETE_OUVRANT "traiterJson("
+#define JS_ENTETE_FERMANT ");\n"
+#define CJSON_BUFFER_TAILLE 256
 
 #define STR_NB "nb"
 #define STR_COULEUR "couleur"

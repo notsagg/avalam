@@ -7,8 +7,6 @@
 
 // MARK: Constantes
 #define DEFAULT_FICHIER_NOM "../build/web/refresh-data.js"
-#define FICHIER_PERM "w"
-#define DEFAULT_JSON_TAILLE 2048
 
 // MARK: Prototypes de fonctions
 void creationjs(T_Position pos, T_Score score, int trait);
@@ -117,9 +115,11 @@ void creationjs(T_Position pos, T_Score score, int trait) {
     }
 
         // c. ajout de l'entête au fichier json
-    char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
-    strcat(jsonString, cJSON_Print(root));
-    strcat(jsonString, ");\n");
+    char *jsonString = cJSON_Print(root);
+    char* jsString = (char*)malloc(sizeof(JS_ENTETE_OUVRANT)+sizeof(jsonString)*CJSON_BUFFER_TAILLE+sizeof(JS_ENTETE_FERMANT));
+    strcpy(jsString, JS_ENTETE_OUVRANT); // copie de l'entete javascript ouvrante dans le string final
+    strcat(jsString, jsonString); // copie de l'information de jeux sous format json dans le string final
+    strcat(jsString, JS_ENTETE_FERMANT); // copie de l'entete javascript fermante dans le string final
 
     // 2. enregistrement du string json dans le fichier d'écriture
         // a. ouverture ou créeation du fichier de sortie
@@ -130,10 +130,14 @@ void creationjs(T_Position pos, T_Score score, int trait) {
         fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", "\x1B[31m", fichierNom);
         exit(EXIT_FAILURE);
     } else {
-        fprintf(fichier, "%s", jsonString);
+        fputs(jsString, fichier);
     }
 
     // 3. nettoyage
+    free(jsString);
+    free(jsonString);
+    jsString = NULL;
+    jsonString = NULL;
     cJSON_Delete(root);
     fclose(fichier);
 }
