@@ -6,7 +6,7 @@
 #include <topologie.h>
 
 // MARK: Constantes
-#define DEFAULT_FICHIER_NOM "../web/exemples/refresh-data.js"
+#define DEFAULT_FICHIER_NOM "../build/web/refresh-data.js"
 #define FICHIER_PERM "w"
 #define DEFAULT_JSON_TAILLE 2048
 
