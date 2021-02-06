@@ -8,7 +8,6 @@ En exécution dynamique, ce programme nécessite les librairies libavalam.so ain
 LD_LIBRARY_PATH comme ceci:
 
 `LD_LIBRARY_PATH=../build/lib:../build/lib/libavalam.so:../build/lib/libcjson.so`
-`export LD_LIBRARY_PATH`
 
 Le mode debug intégré à l'interface décrit le tournant du jeux en imprimant à la console:
 1. Le trait
@@ -21,4 +20,5 @@ Le mode debug intégré à l'interface décrit le tournant du jeux en imprimant 
 1. Boucle infini si un caractère est saisie à la place d'un entier au moment d'entrer l'origine et la destination du pion à déplacer
 
 ## Bugs résolus
-1. Mauvaise allocation dynamique de mémoire causait un plantage à l'appel de free()
+1. L'écriture dans le fichier de sortie json ne se faisait pas
+2. Mauvaise allocation dynamique de mémoire causait un plantage à l'appel de free()

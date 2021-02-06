@@ -109,6 +109,11 @@ typedef struct {
 	T_Coup coups[8*NBCASES];
 } T_ListeCoups;
 
+typedef struct {
+    int val0;
+    int val1;
+} T_Tuple;
+
 octet nbVoisins(octet numCase);
 T_Voisins getVoisins(octet numCase);
 void listerVoisins(octet numCase);

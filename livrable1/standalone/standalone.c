@@ -70,10 +70,23 @@ int main(int argc, char * argv[]) {
 
         // b. récupérer l'origine et la destination de la pile à déplacer
         do {
-            printf("Position de la pile à déplacer: ");
-            scanf("%hhd", &coupOrigine);
-            printf("Destination de la pile à déplacer: ");
-            scanf("%hhd", &coupDestination);
+            T_Tuple etat = { 0, 0 };
+            int temp;
+
+            // tant que la saisie de l'utilisateur n'est pas correcte
+	        while (!(etat.val0 & etat.val1)) {
+		        printf("Position de la pile à déplacer: ");
+		        etat.val0 = scanf("%hhd", &coupOrigine);
+                getchar(); // suppresion du retour à ligne saisie par l'utilisateur
+
+                printf("Destination de la pile à déplacer: ");
+                etat.val1 = scanf("%hhd", &coupDestination);
+
+                if (!(etat.val0 & etat.val1)) {
+                    while ((temp=getchar()) != EOF && temp != '\n');
+                    fprintf(stderr, "%serreur: entrée non définie%s\n\n", "\x1B[31m", "\x1B[0m");
+                }
+	        }
             printf("\n");
         } while (!estValide(pos, coupOrigine, coupDestination));
 
