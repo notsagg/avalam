@@ -22,3 +22,4 @@ Le mode debug intégré à l'interface décrit le tournant du jeux en imprimant 
 ## Bugs résolus
 1. L'écriture dans le fichier de sortie json ne se faisait pas
 2. Mauvaise allocation dynamique de mémoire causait un plantage à l'appel de free()
+3. L'utilisation de 0 pour jaune et 1 pour rouge causait un mauvais affichage du trait dans avalam-refresh.html

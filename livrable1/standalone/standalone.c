@@ -42,7 +42,7 @@ int main(int argc, char * argv[]) {
     fichierNom = (char*)malloc(strlen(DEFAULT_FICHIER_NOM)+1); // nom du fichier d'écriture en sortie
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     octet coupOrigine = 0, coupDestination = 0;
-    int trait = 0; // 0 pour jaune, 1 pour rouge
+    int trait = 1; // 1 pour jaune, 2 pour rouge
 
     // 1. lecture du fichier de sortie à l'execution du programme
     switch (argc-1) {
@@ -66,7 +66,7 @@ int main(int argc, char * argv[]) {
     // 3. tant qu'aucun joueur n'a gagné
     while (getCoupsLegaux(pos).nb != 0) {
         // a. affichage de la couleur à jouer (jaune ou rouge)
-        printf(" -- Au tour des %s --\n", (trait) ? "Rouge (r)" : "Jaune (j)");
+        printf(" -- Au tour des %s --\n", (trait == 1) ? "Jaune (j)" : "Rouge (r)");
 
         // b. récupérer l'origine et la destination de la pile à déplacer
         do {
@@ -94,7 +94,7 @@ int main(int argc, char * argv[]) {
         pos = jouerCoup(pos, coupOrigine, coupDestination);
 
         // d. changer le trait
-        trait = (trait) ? 0 : 1;
+        trait = (trait == 1) ? 2 : 1;
 
         // e. mettre à jour le score pour les deux joueurs
         score = evaluerScore(pos);
