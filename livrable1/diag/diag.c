@@ -1,3 +1,10 @@
+//
+//  diag.c
+//  Avalam: Challenge Moteur de Jeux
+//
+//  Crée par Urban Prevost, Romain Lefebvre, Paul Bezeau et Gaston Pelletier le 04/02/21
+//
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

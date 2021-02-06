@@ -6,7 +6,7 @@ debug: install
 
 INC=-I../include
 
-install: libavalam.so libavalam.a libcJSON.a libcJSON.so
+install: libavalam.so libavalam.a libcJSON.so libcJSON.a
 	mkdir -p ../build/lib
 	cp libavalam.so libavalam.a ../build/lib
 
@@ -15,16 +15,17 @@ libavalam.so : libavalam.c
 
 libavalam.a : libavalam.c
 	gcc $(DEBUG) $(INC) -c  libavalam.c -o libavalam.o
-	ar qvs libavalam.a  libavalam.o
+	ar qvs libavalam.a libavalam.o
+	rm libavalam.o
 
-clean:
-	rm -rf  *.so *.a *.o
-	rm -rf  ../build/lib/*.so ../build/lib/*.a
+libcJSON.so: ../include/cJSON.c
+	gcc -shared -fPIC ../include/cJSON.c -o ../build/lib/libcJSON.so
 
 libcJSON.a: ../include/cJSON.c
 	gcc -c ../include/cJSON.c -o ../include/cJSON.o
 	ar qvs ../build/lib/libcJSON.a ../include/cJSON.o
 	rm ../include/cJSON.o
 
-libcJSON.so: ../include/cJSON.c
-	gcc -shared -fPIC ../include/cJSON.c -o ../build/lib/libcJSON.so
+clean:
+	rm -rf  *.so *.a *.o
+	rm -rf  ../build/lib/*.so ../build/lib/*.a
