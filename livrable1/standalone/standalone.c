@@ -173,6 +173,7 @@ void creationjs(T_Position pos, T_Score score, int trait) {
         // b. vérification de la possibilité d'écriture
     if (fichier == NULL) {
         fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", "\x1B[31m", fichierNom);
+        fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe\n");
         exit(EXIT_FAILURE);
     } else {
         fputs(jsString, fichier);
