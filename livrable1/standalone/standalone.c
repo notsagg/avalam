@@ -19,7 +19,7 @@
 #endif
 
 // MARK: Constantes
-#define DEFAULT_FICHIER_NOM "../build/web/refresh-data.js"
+#define DEFAULT_FICHIER_NOM "../build/web/data/refresh-data.js"
 
 // MARK: Prototypes de fonctions
 void creationjs(T_Position pos, T_Score score, int trait);
