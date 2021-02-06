@@ -5,6 +5,12 @@
 #include <avalam.h>
 #include <topologie.h>
 
+#ifdef __DEBUG__
+    #define DBG 1
+#else
+    #define DBG 0
+#endif
+
 // MARK: Constantes
 #define DEFAULT_FICHIER_NOM "../build/web/refresh-data.js"
 
@@ -26,7 +32,7 @@ Notes:
 5. Détecte la fin de la partie et affiche le score à l’écran
 */
 int main(int argc, char * argv[]) {
-    fichierNom = (char*)malloc(sizeof(DEFAULT_FICHIER_NOM)); // nom du fichier d'écriture en sortie
+    fichierNom = (char*)malloc(strlen(DEFAULT_FICHIER_NOM)+1); // nom du fichier d'écriture en sortie
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     octet coupOrigine = 0, coupDestination = 0;
     int trait = 0; // 0 pour jaune, 1 pour rouge
@@ -34,7 +40,7 @@ int main(int argc, char * argv[]) {
     // 1. lecture du fichier de sortie à l'execution du programme
     switch (argc-1) {
     	case 1:
-            fichierNom = (char*)realloc(fichierNom, sizeof(argv[1]));
+            fichierNom = (char*)realloc(fichierNom, strlen(argv[1])+1);
             strcpy(fichierNom, argv[1]);
             break;
     	default:
@@ -75,6 +81,19 @@ int main(int argc, char * argv[]) {
 
         // f. mise à jour du score et de la position des pions dans le fichier de sortie
         creationjs(pos, score, trait);
+
+        // g. mode debug
+        if (DBG) {
+            printf("%s", "\x1B[33m");
+            printf("[     trait      ]   %d\n", trait);
+            printf("[     scoreJ     ]   %d\n", score.nbJ);
+            printf("[     scoreJ5    ]   %d\n", score.nbJ5);
+            printf("[     scoreR     ]   %d\n", score.nbR);
+            printf("[     scoreR5    ]   %d\n", score.nbR5);
+            printf("[ coups restants ]   %d\n", getCoupsLegaux(pos).nb);
+            printf("[     en tête    ]   %s\n", (score.nbJ+score.nbJ5) > (score.nbR+score.nbR5) ? STR_J: STR_R);
+            printf("%s\n", "\x1B[0m");
+        }
     }
 
     // 4. nettoyage global
@@ -114,14 +133,20 @@ void creationjs(T_Position pos, T_Score score, int trait) {
         cJSON_AddItemToObject(col, STR_COULEUR, cJSON_CreateNumber(pos.cols[i].couleur));
     }
 
-        // c. ajout de l'entête au fichier json
+    // 2. création d'un string js contenant une entete ouvrante et fermante ainsi que le string json
     char *jsonString = cJSON_Print(root);
-    char* jsString = (char*)malloc(sizeof(JS_ENTETE_OUVRANT)+sizeof(jsonString)*CJSON_BUFFER_TAILLE+sizeof(JS_ENTETE_FERMANT));
-    strcpy(jsString, JS_ENTETE_OUVRANT); // copie de l'entete javascript ouvrante dans le string final
-    strcat(jsString, jsonString); // copie de l'information de jeux sous format json dans le string final
-    strcat(jsString, JS_ENTETE_FERMANT); // copie de l'entete javascript fermante dans le string final
+    char* jsString = (char*)malloc(strlen(JS_ENTETE_OUVRANT)+strlen(jsonString)*CJSON_BUFFER_TAILLE+strlen(JS_ENTETE_FERMANT));
 
-    // 2. enregistrement du string json dans le fichier d'écriture
+        // a. copie de l'entete javascript ouvrante dans le string final
+    strcpy(jsString, JS_ENTETE_OUVRANT);
+
+        // b. copie de l'information de jeux sous format json dans le string final
+    strcat(jsString, jsonString);
+
+        // c. copie de l'entete javascript fermante dans le string final
+    strcat(jsString, JS_ENTETE_FERMANT);
+
+    // 3. enregistrement du string json dans le fichier d'écriture
         // a. ouverture ou créeation du fichier de sortie
     fichier = fopen(fichierNom, FICHIER_PERM);
 
@@ -133,11 +158,11 @@ void creationjs(T_Position pos, T_Score score, int trait) {
         fputs(jsString, fichier);
     }
 
-    // 3. nettoyage
-    free(jsString);
+    // 4. nettoyage
     free(jsonString);
-    jsString = NULL;
+    free(jsString);
     jsonString = NULL;
+    jsString = NULL;
     cJSON_Delete(root);
     fclose(fichier);
 }
