@@ -31,7 +31,7 @@ bool fenValide(char *);
 int cversi(const char);
 
 // MARK: Main
-int main() {
+int main(int argc, char * argv[]) {
     FILE *fichier; // flux d'écriture pour le fichier diag.js
     cJSON *root, *cols, *col; // cJSON
     char *nomFichier = malloc(sizeof(char*)); // nom du fichier de sortie
@@ -39,17 +39,23 @@ int main() {
     char *fen = malloc(sizeof(char*)); // fen de la partie
     int trait; // 0 pour vide, 1 pour jaune, 2 pour rouge
 
+    //verification saisie commande
+    if ((argc <=2) | (argc >= 4)){
+    	printf("Saisie commande invalide\nSaisir : diag.exe <numero_de_diagramme> <position_type_FEN>\n");
+    	exit(EXIT_FAILURE);
+    }
+    
     // 1. demander à l'utilisateur le nom du fichier .js à écrire
     char option;
     printf("Souhaitez vous nommer le fichier de sortie? [%c/%c] ", REP_OUI, REP_NON);
     scanf("%c", &option);
     getchar();
 
-    if (option == REP_OUI) {
+    if ((option == REP_OUI) | (option == REP_OUI + 32)) {
         printf("Comment souhaitez vous le nommer: ");
         scanf("%s", nomFichier);
         strcat(nomFichier, DEFAULT_EXTENSION);
-    } else if (option == REP_NON) {
+    } else if ((option == REP_NON) | (option == REP_NON -32)) {
         nomFichier = DEFAULT_FICHIER_NOM;
     } else {
         throw();
@@ -58,7 +64,7 @@ int main() {
 
     // 2. demander à l'utilisateur une chaine de description
     option = REP_NON;
-    while (option != REP_OUI) {
+    while ((option != REP_OUI + 32) & (option != REP_OUI)) {
         printf("Chaine de description (%d caractères max): ", LG_DESCRIPTION);
         fgets(description, LG_DESCRIPTION+1, stdin);
         rmNewLine(description); // suppression du \n
@@ -68,12 +74,8 @@ int main() {
         scanf("%c", &option);
         getchar();
     }
-
-    // 3. demander à l'utilisateur le fen
-    printf("Numéro de diagramme de type FEN: ");
-    fgets(fen, NBCASES+3, stdin);
-    rmNewLine(fen); // suppression du \n
-    // if (!fenValide(fen)) throw(); // vérifier le fen tapé par l'utilisateur
+    
+    strcat(fen, argv[2]);
 
     // 4. traduire le fen en trait
     unsigned int i = 0;
