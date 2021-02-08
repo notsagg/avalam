@@ -29,15 +29,15 @@ int nbcarVersInt(const char);
 char *rmNewLine(char *);
 bool fenValide(char *);
 int cversi(const char);
+void creationjs(char *fen, char *description, char *numDiag, char *nomFichier); //<--
+
+
 
 // MARK: Main
 int main(int argc, char * argv[]) {
-    FILE *fichier; // flux d'écriture pour le fichier diag.js
-    cJSON *root, *cols, *col; // cJSON
     char *nomFichier = malloc(sizeof(char*)); // nom du fichier de sortie
     char *description = malloc(sizeof(char*)); // description de la partie représentée par le fen
     char *fen = malloc(sizeof(char*)); // fen de la partie
-    int trait; // 0 pour vide, 1 pour jaune, 2 pour rouge
 
     //verification saisie commande
     if ((argc <=2) | (argc >= 4)){
@@ -75,67 +75,9 @@ int main(int argc, char * argv[]) {
         getchar();
     }
     
-    strcat(fen, argv[2]);
-
-    // 4. traduire le fen en trait
-    unsigned int i = 0;
-    while (fen[i] != ' ') { ++i; }
-
-    switch (fen[i+1]) {
-        case 'j': trait = 1; break;
-        case 'r': trait = 2; break;
-        default: throw(); break;
-    }
-
-    // 5. écrire l'information dans le fichier json
-        // a. création d'un string json enregistrant le trait, description et fen de la partie
-    root = cJSON_CreateObject(); // object json racine
-    cols = cJSON_CreateArray(); // tableau json des positions
-
-    cJSON_AddItemToObject(root, STR_TURN, cJSON_CreateNumber(trait));
-    // cJSON_AddItemToObject(root, "numDiag", cJSON_CreateNumber(numDiag));
-    cJSON_AddItemToObject(root, STR_NOTES, cJSON_CreateString(description));
-    cJSON_AddItemToObject(root, STR_FEN, cJSON_CreateString(fen));
-
-    // 6. traduction du fen en cols et ajout de la position des pions au json
-    cJSON_AddItemToObject(root, STR_COLS, cols);
-
-    int chiffre[NBCASES];
-    unsigned int inc=0, t=0;
-    while (fen[inc] != ' ') {
-        // est chiffre
-        if (isdigit(fen[inc])) {
-            int pos = inc;
-            while (isdigit(fen[inc])) chiffre[t++] = cversi(fen[inc++]);
-            for (unsigned int j = pos; j < pos+arrIntVersInt(chiffre, t); ++j) nvcol(cols, 0, 0);
-        }
-
-        // est minuscule
-        if (islower(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 1);
-
-        // est majuscule
-        if (isupper(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 2);
-    }
-
-   // 7. ajout de l'entete au fichier json
-    char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
-    strcat(jsonString, cJSON_Print(root));
-    strcat(jsonString, ");\n");
-
-    // 8. écriture du string json dans le fichier diag.js
-        // - ouverture ou création du fichier diag.js
-    fichier = fopen(nomFichier, FICHIER_PERM);
-
-        // - vérification de la possibilité d'écriture
-    if (fichier == NULL) {
-        printf("Erreur d'ouverture du fichier %s", nomFichier);
-    } else {
-        fprintf(fichier, "%s", jsonString);
-    }
-
-    // 8. nettoyage
-    cJSON_Delete(root);
-    fclose(fichier);
+    // 3. creation json
+    creationjs(argv[2], description, argv[1], nomFichier);
+    
     free(description);
     free(fen);
     return EXIT_SUCCESS;
@@ -212,4 +154,70 @@ bool fenValide(char *fen) {
 */
 int cversi(const char c) {
     return c-'0';
+}
+
+void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
+	FILE *fichier; // flux d'écriture pour le fichier diag.js
+	cJSON *root, *cols, *col; // cJSON
+	int trait; // 0 pour vide, 1 pour jaune, 2 pour rouge
+
+	// 4. traduire le fen en trait
+    unsigned int i = 0;
+    while (fen[i] != ' ') { ++i; }
+
+    switch (fen[i+1]) {
+        case 'j': trait = 1; break;
+        case 'r': trait = 2; break;
+        default: throw(); break;
+    }
+
+    // 5. écrire l'information dans le fichier json
+        // a. création d'un string json enregistrant le trait, description et fen de la partie
+    root = cJSON_CreateObject(); // object json racine
+    cols = cJSON_CreateArray(); // tableau json des positions
+
+    cJSON_AddItemToObject(root, STR_TURN, cJSON_CreateNumber(trait));
+    cJSON_AddItemToObject(root, "numDiag", cJSON_CreateNumber(atoi(numDiag)));
+    cJSON_AddItemToObject(root, STR_NOTES, cJSON_CreateString(description));
+    cJSON_AddItemToObject(root, STR_FEN, cJSON_CreateString(fen));
+
+    // 6. traduction du fen en cols et ajout de la position des pions au json
+    cJSON_AddItemToObject(root, STR_COLS, cols);
+
+    int chiffre[NBCASES];
+    unsigned int inc=0, t=0;
+    while (fen[inc] != ' ') {
+        // est chiffre
+        if (isdigit(fen[inc])) {
+            int pos = inc;
+            while (isdigit(fen[inc])) chiffre[t++] = cversi(fen[inc++]);
+            for (unsigned int j = pos; j < pos+arrIntVersInt(chiffre, t); ++j) nvcol(cols, 0, 0);
+        }
+
+        // est minuscule
+        if (islower(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 1);
+
+        // est majuscule
+        if (isupper(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 2);
+    }
+
+   // 7. ajout de l'entete au fichier json
+    char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
+    strcat(jsonString, cJSON_Print(root));
+    strcat(jsonString, ");\n");
+
+    // 8. écriture du string json dans le fichier diag.js
+        // - ouverture ou création du fichier diag.js
+    fichier = fopen(nomFichier, FICHIER_PERM);
+
+        // - vérification de la possibilité d'écriture
+    if (fichier == NULL) {
+        printf("Erreur d'ouverture du fichier %s", nomFichier);
+    } else {
+        fprintf(fichier, "%s", jsonString);
+    }
+
+    // 8. nettoyage
+    cJSON_Delete(root);
+    fclose(fichier);
 }
