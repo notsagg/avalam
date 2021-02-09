@@ -230,4 +230,102 @@ void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
     // 8. nettoyage
     cJSON_Delete(root);
     fclose(fichier);
+}}
+/**
+Crée une nouvelle objet contenant un attribut nombre et couleur à l'intérieur d'un array donnée
+
+- Paramètre array: auxquel on souhaite joindre l'objet crée
+- Paramètre nb: à écrire danas l'objet crée (correspond aux nombre de pions dans une pile donnée)
+- Paramètre couleur: à écrire dans l'objet crée (correspond à la couleur en tête de pile de pions)
+*/
+void nvcol(cJSON *array, const int nb, const int couleur) {
+    cJSON *col = cJSON_CreateObject();
+    cJSON_AddItemToArray(array, col);
+    cJSON_AddItemToObject(col, STR_NB, cJSON_CreateNumber(nb));
+    cJSON_AddItemToObject(col, STR_COULEUR, cJSON_CreateNumber(couleur));
+}
+/**
+Valide la fen donnée en entrée selon le critère de somme est égal à 48 et trait jaune (j) ou rouge (r)
+
+- Paramètre fen: à faire valider par la fonction
+- Retourne: un boolean indiquant si la chaine est valide ou non
+*/
+bool fenValide(char *fen) {
+    unsigned int i=0, j=0, compte=0;
+    bool valide = false;
+
+    // validation du nombres de pions donné par la fen
+    int chiffre[NBCASES];
+    while (fen[i] != ' ' && fen[i] != '\n' && fen[i] != '\0') {
+        if (!isdigit(fen[i])) {
+            compte += fenversi(fen[i]);
+        } else {
+            while (isdigit(fen[i])) chiffre[j++] = cversi(fen[i++]);
+            compte += aiversi(chiffre, j);
+            --i;
+        }
+        j=0;
+        ++i;
+    }
+
+    // validation du trait
+    if (fen[i+1] == 'r' || fen[i+1] == 'j') valide = true;
+
+    // si le compte vaut 48 et le trait est valide alors la fen est valide
+    return (compte == NBCASES && valide);
+}
+/**
+Supprime le saut de ligne présent dans la plupart des strings (le \n)
+
+- Paramètre s: correspond au string pour lequel on souhaite supprimer le saut de ligne
+- Retourne: le string d'entrée sans le saut de ligne s'il existait
+*/
+char *rmNewLine(char s[]) {
+    s = strstr(s, "\n");
+    if (s != NULL) { strncpy(s, "\0", 1); }
+    return s;
+}
+/**
+Convertit un entier de type caractère vers un entier
+
+- Paramètre c: le chiffre sous forme de caractère à convertir en entier
+- Retourne: un entier qui correspond au caractère d'entrée convertit
+*/
+int cversi(const char c) {
+    return c-'0';
+}
+/**
+Convertit un tableau d'entier en entier
+
+- Paramètre e: tableau d'entier à faire convertir
+- Paramètre taille: du tableau à faire convertir
+- Retourne: un entier qui correspond aux chiffres stockés dans chaque cases du tableau d'entiers
+*/
+int aiversi(const int e[], const int taille) {
+    int resultat = 0;
+    for (unsigned int i = 0; i < taille; ++i) {
+        resultat *= 10;
+        resultat += e[i];
+    }
+    return resultat;
+}
+/**
+Convertiseur d'un caractère de la fen en son chiffre équivalent
+
+- Paramètre c: caractère de la fen à faire convertir
+- Retourne: un entier qui correspond au caractère d'entrée convertit
+*/
+int fenversi(const char c) {
+    switch (c) {
+        case 'u': return 1;
+        case 'd': return 2;
+        case 't': return 3;
+        case 'q': return 4;
+        case 'c': return 5;
+        case 'U': return fenversi('u');
+        case 'D': return fenversi('d');
+        case 'T': return fenversi('t');
+        case 'Q': return fenversi('q');
+        case 'C': return fenversi('c');
+    }
 }
