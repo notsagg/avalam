@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "avalam.h"
 
 extern T_Voisins topologie[NBCASES];
 T_Position positionInitiale;
 
+// MARK: Manipulation du jeux
 /**
 Le nombre de voisins autour d'une case donnée
 
@@ -180,12 +182,7 @@ Afficher le score pour les Jaunes puis les Rouges
 2. Le score comporte le nombre de tours rouges ainsi que le nombre de tours à 5 pions rouges
 */
 void afficherScore(T_Score s) {
-	printf("%sJ: %d (%d piles de 5)%s - %sR : %d (%d piles de 5)%s\n", "\x1B[33m", s.nbJ, s.nbJ5, "\x1B[0m", "\x1B[31m", s.nbR, s.nbR5, "\x1B[0m");
-
-	// 1. jaune: "\x1B[33m"
-	// 2. blanc: "\x1B[0m"
-	// 3. rouge: "\x1B[31m"
-	// 4. blanc: "\x1B[0m"
+	printf("%sJ: %d (%d piles de 5)%s - %sR : %d (%d piles de 5)%s\n", CL_JAUNE, s.nbJ, s.nbJ5, CL_BLANC, CL_ROUGE, s.nbR, s.nbR5, CL_BLANC);
 }
 
 /**
@@ -224,4 +221,25 @@ octet estValide(T_Position p, octet origine, octet destination) {
 
 	printf("jouerCoup impossible : cases %d et %d inaccessibles! \n", origine, destination);
 	return FAUX;
+}
+
+// MARK: Gestions des erreurs
+/**
+*/
+void throwInput() {
+    fprintf(stderr, "%serreur: entrée non définie\n", "\x1B[31m");
+    exit(EXIT_FAILURE);
+}
+/**
+*/
+void throwFile(char *fichierNom) {
+	fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", CL_ROUGE, fichierNom);
+    fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe%s\n", CL_BLANC);
+	exit(EXIT_FAILURE);
+}
+/**
+*/
+void throw(char *msg) {
+	fprintf(stderr, "%s%s%s\n", CL_ROUGE, msg, CL_BLANC);
+	exit(EXIT_FAILURE);
 }

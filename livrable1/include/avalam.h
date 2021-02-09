@@ -69,6 +69,12 @@
 #define STR_RESULTAT "\"resultat\""
 #define STR_STATUT "\"statut\""
 
+// Couleurs
+#define CL_BLANC "\x1B[0m"
+#define CL_JAUNE "\x1B[33m"
+#define CL_ROUGE "\x1B[31m"
+#define CL_VERT "\x1B[32m"
+
 // MARK: Macros
 // vérification appels systèmes
 #define CHECK_IF(sts,val,msg) \
@@ -117,6 +123,7 @@ typedef struct {
 } T_Tuple;
 
 // MARK: Déclaration - Prototypes de Fonctions
+// Manipulation du jeux
 /// Le nombre de voisins autour d'une case donnée
 octet nbVoisins(octet numCase);
 /// Les numéros de cases des voisins d'un numéro de cases donné
@@ -141,3 +148,11 @@ T_Score evaluerScore(T_Position p);
 void afficherScore(T_Score s);
 /// Vérification de la légalité d'un coup
 octet estValide(T_Position p, octet origine, octet destination);
+
+// Gestions des erreurs
+///
+void throwInput();
+///
+void throwFile(char*);
+///
+void throw(char*);

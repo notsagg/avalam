@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
 
     // 5. affiche du score en fin de partie
     afficherScore(score);
-    printf("\n"); // couleur fermant
+    printf("\n");
 
     // 6. nettoyage global
     free(fichierNom);
@@ -191,13 +191,8 @@ void creationjs(T_Position pos, T_Score score, int trait) {
     fichier = fopen(fichierNom, FICHIER_PERM);
 
         // b. vérification de la possibilité d'écriture
-    if (fichier == NULL) {
-        fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", "\x1B[31m", fichierNom);
-        fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe\n");
-        exit(EXIT_FAILURE);
-    } else {
-        fputs(jsString, fichier);
-    }
+    if (fichier == NULL) throwFile(fichierNom);
+    else fputs(jsString, fichier);
 
     // 4. nettoyage
     free(jsonString);
