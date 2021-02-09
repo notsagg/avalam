@@ -1,5 +1,30 @@
+// MARK: Debug
+#ifdef __DEBUG__
+	#define printf0(p) printf(p)
+	#define printf1(p,q) printf(p,q)
+	#define printf2(p,q,r) printf(p,q,r)
+	#define printf3(p,q,r,s) printf(p,q,r,s)
+	#define printf4(p,q,r,s,t) printf(p,q,r,s,t)
+	#define whoamid(p) whoami(p)
+	#define whopd(p) whop(p)
+	#define whojd(p) whoj(p)
+	#define whoamjd() whoamj()
+#else
+	#define printf0(p)
+	#define printf1(p,q)
+	#define printf2(p,q,r)
+	#define printf3(p,q,r,s)
+	#define printf4(p,q,r,s,t)
+	#define whoamid(p)
+	#define whoamjd()
+	#define whopd(p)
+	#define whojd(p)
+#endif
+
+// MARK: Constantes
 #define FAUX 0
 #define VRAI 1
+#define NBCASES 48
 
 // Vainqueurs des parties et joueurs au trait
 #define EGALITE 0
@@ -7,11 +32,9 @@
 #define JAU 1
 #define ROU 2
 
-#define NBCASES 48
+#define COLNAME(c) ((c == ROU) ? "rouge" : "jaune")
 
-#define COLNAME(c) ((c==ROU) ? "rouge" : "jaune")
-
-// Pour les exports JSON ////////////////////////////////////////////
+// Exports JSON
 #define FICHIER_PERM "w"
 #define JS_ENTETE_OUVRANT "traiterJson("
 #define JS_ENTETE_FERMANT ");\n"
@@ -46,36 +69,21 @@
 #define STR_RESULTAT "\"resultat\""
 #define STR_STATUT "\"statut\""
 
-#ifdef __DEBUG__
-	#define printf0(p) printf(p)
-	#define printf1(p,q) printf(p,q)
-	#define printf2(p,q,r) printf(p,q,r)
-	#define printf3(p,q,r,s) printf(p,q,r,s)
-	#define printf4(p,q,r,s,t) printf(p,q,r,s,t)
-	#define whoamid(p) whoami(p)
-	#define whopd(p) whop(p)
-	#define whojd(p) whoj(p)
-	#define whoamjd() whoamj()
-#else
-	#define printf0(p)
-	#define printf1(p,q)
-	#define printf2(p,q,r)
-	#define printf3(p,q,r,s)
-	#define printf4(p,q,r,s,t)
-	#define whoamid(p)
-	#define whoamjd()
-	#define whopd(p)
-	#define whojd(p)
-#endif
+// Couleurs
+#define CL_BLANC "\x1B[0m"
+#define CL_JAUNE "\x1B[33m"
+#define CL_ROUGE "\x1B[31m"
+#define CL_VERT "\x1B[32m"
 
-//verif appels systèmes
-
+// MARK: Macros
+// vérification appels systèmes
 #define CHECK_IF(sts,val,msg) \
 if ((sts) == (val)) {fprintf(stderr,"erreur appel systeme\n");perror(msg); exit(-1);}
 
 #define CHECK_DIF(sts,val,msg) \
 if ((sts) != (val)) {fprintf(stderr,"erreur appel systeme\n");perror(msg); exit(-1);}
 
+// MARK: Types
 typedef unsigned char octet;
 
 typedef struct {
@@ -114,16 +122,37 @@ typedef struct {
     int val1;
 } T_Tuple;
 
+// MARK: Déclaration - Prototypes de Fonctions
+// Manipulation du jeux
+/// Le nombre de voisins autour d'une case donnée
 octet nbVoisins(octet numCase);
+/// Les numéros de cases des voisins d'un numéro de cases donné
 T_Voisins getVoisins(octet numCase);
+/// Liste les cases des voisins d'une case donnée
 void listerVoisins(octet numCase);
+/// La position initiale de tous les pions du plateau de jeux
 T_Position getPositionInitiale();
+/// Affiche la position initiale de tous les pions du plateau
 void afficherPosition(T_Position p);
-void addCoup(T_ListeCoups * pL, octet origine, octet destination);
+/// Ajouter un coup à la liste des coups
+void addCoup(T_ListeCoups *pL, octet origine, octet destination);
+/// Afficher la liste des coups autorisés (origine et destination)
 void afficherListeCoups(T_ListeCoups l);
+/// Jouer un coup en mettant à jour la position des pions du plateau du jeux
 T_Position jouerCoup(T_Position p, octet origine, octet destination) ;
+/// Retourne l'ensemble des coups légaux pour une position des pions sur le plateau de jeux
 T_ListeCoups getCoupsLegaux(T_Position p) ;
+/// Evaluer le nouveau score des deux couleurs selon un plateau de jeux donné
 T_Score evaluerScore(T_Position p);
+/// Afficher le score pour les Jaunes puis les Rouges
 void afficherScore(T_Score s);
-
+/// Vérification de la légalité d'un coup
 octet estValide(T_Position p, octet origine, octet destination);
+
+// Gestions des erreurs
+///
+void throwInput();
+///
+void throwFile(char*);
+///
+void throw(char*);
