@@ -116,7 +116,27 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // 4. nettoyage global
+    // 4. affichage du vainqueur
+    printf("Bon jeux - ");
+    if (score.nbJ > score.nbR) { // cas où les jaunes sont vainqueur
+        printf("Les jaunes (J) sont vainqueurs\n");
+    } else if (score.nbJ < score.nbR) { // cas où les rouges sont vainqueur
+        printf("Les rouges (R) sont vainqueurs\n");
+    } else { // cas d'égalité
+        if (score.nbJ5 > score.nbR5) { // cas où les jaunes sont vainqueur
+            printf("Les jaunes (J) sont vainqueurs\n");
+        } else if (score.nbJ5 < score.nbR5) { // cas où les rouges sont vainqueur
+            printf("Les rouges (R) sont vainqueurs\n");
+        } else { // cas d'égalité
+            printf("Egalité entre les J et R\n");
+        }
+    }
+
+    // 5. affiche du score en fin de partie
+    afficherScore(score);
+    printf("\n"); // couleur fermant
+
+    // 6. nettoyage global
     free(fichierNom);
     fichierNom = NULL;
     return EXIT_SUCCESS;

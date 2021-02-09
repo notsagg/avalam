@@ -22,7 +22,7 @@ Le mode debug intégré à l'interface décrit le tournant du jeux en imprimant 
 - [x] A chaque coup, produit un fichier json avec la position et le score
 - [x] Le nom du fichier facultatif peut être passé en ligne de commandes
 - [x] Un nom par défaut est prévu dans le programme
-- [ ] Détecte la fin de la partie et affiche le score à l’écran
+- [x] Détecte la fin de la partie et affiche le score à l’écran
 
 ## Bugs connus
 1. Boucle infini si un caractère est saisie à la place d'un entier au moment d'entrer l'origine et la destination du pion à déplacer

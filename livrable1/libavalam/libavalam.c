@@ -180,7 +180,12 @@ Afficher le score pour les Jaunes puis les Rouges
 2. Le score comporte le nombre de tours rouges ainsi que le nombre de tours à 5 pions rouges
 */
 void afficherScore(T_Score s) {
-	printf("J: %d (%d piles de 5) - R : %d (%d piles de 5)\n", s.nbJ, s.nbJ5, s.nbR, s.nbR5);
+	printf("%sJ: %d (%d piles de 5)%s - %sR : %d (%d piles de 5)%s\n", "\x1B[33m", s.nbJ, s.nbJ5, "\x1B[0m", "\x1B[31m", s.nbR, s.nbR5, "\x1B[0m");
+
+	// 1. jaune: "\x1B[33m"
+	// 2. blanc: "\x1B[0m"
+	// 3. rouge: "\x1B[31m"
+	// 4. blanc: "\x1B[0m"
 }
 
 /**
