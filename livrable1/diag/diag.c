@@ -71,11 +71,26 @@ int main(int argc, char * argv[]) {
     // 2. demander à l'utilisateur une chaine de description
     option = REP_NON;
     while ((option != REP_OUI + 32) & (option != REP_OUI)) {
-        printf("Chaine de description (%d caractères max): ", LG_DESCRIPTION);
-        fgets(description, LG_DESCRIPTION+1, stdin);
-        rmNewLine(description); // suppression du \n
-
-        printf("La description sera: %s\n", description);
+        printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
+        
+        //test de la saise de la chaine dans un mode interractif
+        
+        //fgets(description, LG_DESCRIPTION+1, stdin);
+        //rmNewLine(description); // suppression du \n
+        system("cat > desc.txt");
+        FILE *desc;
+        desc = fopen("desc.txt","r");
+        int l=0;
+        char carac;
+        do{   
+            carac= fgetc(desc);
+            description[l] = carac;
+            l++;  
+        }while (carac != EOF);
+        description[LG_DESCRIPTION-1]='\0';
+        fclose(desc);
+        
+        printf("\nLa description sera: \"%s\"\n", description);
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
         scanf("%c", &option);
         getchar();
