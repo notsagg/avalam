@@ -13,6 +13,12 @@
 #include <cJSON.h>
 #include <avalam.h>
 
+#ifdef __DEBUG__
+    #define DBG 1
+#else
+    #define DBG 0
+#endif
+
 // MARK: Constantes
 #define DEFAULT_FICHIER_NOM "diag.js"
 #define DEFAULT_EXTENSION ".js"
@@ -230,4 +236,13 @@ void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
     // 8. nettoyage
     cJSON_Delete(root);
     fclose(fichier);
+
+    //9. debug
+    if (DBG) {
+        printf("%s", "\x1B[33m");
+        printf("[     trait      ]   %d\n", trait);
+        printf("[    numdiag     ]   %s\n", numDiag);
+        printf("[      fen       ]   %s\n", fen);
+        printf("%s\n", "\x1B[0m");
+    }
 }
