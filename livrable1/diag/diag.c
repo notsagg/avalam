@@ -73,7 +73,7 @@ int main(int argc, char * argv[]) {
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
         scanf("%c", &option);
         getchar();
-    }
+    };
 
     //3. fen valide ? + création JSON
     if (fenValide(argv[2])){
@@ -148,17 +148,29 @@ bool fenValide(char *fen) {
     while (fen[i] != ' ' && fen[i] != '\n') {
         if((int)fen[i]<48 || (int)fen[i]>57){
             i++;compte++;
+            if(t!=0){
+               compte += arrIntVersInt(chiffre, t);
+               t = 0; 
+            }
         }else{
             chiffre[j]=cversi(fen[i]);
             i++;j++;t++;
+            if(t==2){
+                compte += arrIntVersInt(chiffre, t);
+               t = 0;
+            }
         }
     }
-    compte += arrIntVersInt(chiffre, t);
 
-    // trait
     if (fen[i+1] == 'r' || fen[i+1] == 'j') valide = true;
 
-    return (compte == NBCASES && valide) ? true : false;
+    if(compte == NBCASES && valide){
+        return 1;
+    }
+    else{
+        printf("else\n");
+        return 0;
+    }
 }
 /**
 */
@@ -167,10 +179,10 @@ int cversi(const char c) {
 }
 
 void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
-	FILE *fichier; // flux d'écriture pour le fichier diag.js
+    FILE *fichier; // flux d'écriture pour le fichier diag.js
 	cJSON *root, *cols, *col; // cJSON
 	int trait; // 0 pour vide, 1 pour jaune, 2 pour rouge
-
+    
 	// 4. traduire le fen en trait
     unsigned int i = 0;
     while (fen[i] != ' ') { ++i; }
@@ -180,7 +192,7 @@ void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
         case 'r': trait = 2; break;
         default: throw(); break;
     }
-
+    
     // 5. écrire l'information dans le fichier json
         // a. création d'un string json enregistrant le trait, description et fen de la partie
     root = cJSON_CreateObject(); // object json racine
