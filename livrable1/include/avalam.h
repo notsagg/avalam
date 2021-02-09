@@ -51,7 +51,7 @@
 #define STR_SCORE_R "scoreR"
 #define STR_SCORE_R5 "scoreR5"
 
-#define STR_NUMDIAG "\"numDiag\""
+#define STR_NUMDIAG "numDiag"
 #define STR_NOTES "notes"
 
 #define STR_COUPS "\"coups\""

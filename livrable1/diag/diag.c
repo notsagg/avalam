@@ -7,67 +7,116 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <ctype.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <time.h>
 #include <cJSON.h>
 #include <avalam.h>
+#include <topologie.h>
 
 // MARK: Constantes
-#define DEFAULT_FICHIER_NOM "diag.js"
-#define DEFAULT_EXTENSION ".js"
+#define DEFAULT_FICHIER_NOM "../build/web/data/diag-diag.js"
 #define DEFAULT_JSON_TAILLE 2048
-#define LG_DESCRIPTION 55
+#define LG_DESCRIPTION 45
 #define REP_OUI 'Y'
 #define REP_NON 'n'
 
 // MARK: Prototypes de fonctions
-void throw();
+void creationjs(char *fen, char *description, octet numDiag, char *nomFichier);
 void nvcol(cJSON*, const int, const int);
-int arrIntVersInt(const int*, const int);
-int nbcarVersInt(const char);
-char *rmNewLine(char *);
 bool fenValide(char *);
+char *rmNewline(char *);
 int cversi(const char);
-void creationjs(char *fen, char *description, char *numDiag, char *nomFichier); //<--
+int aiversi(const int*, const int);
+int fenversi(const char);
 
-
+// MARK: Variables globales
+char *fichierNom = NULL;
+char *description = NULL;
+char *fen = NULL;
+octet numDiag;
 
 // MARK: Main
-int main(int argc, char * argv[]) {
-    char *nomFichier = malloc(sizeof(char*)); // nom du fichier de sortie
-    char *description = malloc(sizeof(char*)); // description de la partie représentée par le fen
-    char *fen = malloc(sizeof(char*)); // fen de la partie
+int main(int argc, char *argv[]) {
+    srand(time(NULL)); // initialisation
+    char *nomFichier = (char*)malloc(LG_DESCRIPTION+1); // nom du fichier de sortie
+    char *description = (char*)malloc(LG_DESCRIPTION+1); // description de la partie représentée par le fen
+    char *fen = (char*)malloc(sizeof(char)); // fen de la partie
 
-    //verification saisie commande
-    if ((argc <=2) | (argc >= 4)){
-    	printf("Saisie commande invalide\nSaisir : diag.exe <numero_de_diagramme> <position_type_FEN>\n");
-    	exit(EXIT_FAILURE);
+    // 1. lecture du numéro de diagramme et du fen à l'execution du programme
+    if ((argc-1) > 2 || (argc-1) < 1) {
+        throw("erreur: synthaxe attendue: diag.exe <numero_de_diagramme> \"<position_type_FEN>\"");
     }
 
-    // 1. demander à l'utilisateur le nom du fichier .js à écrire
+    // 2. vérification de la saisir du numéro de digramme
+    bool diagPremier = true, diagSecond = true;
+    unsigned int i=0;
+
+    while (argv[i]) { if (strlen(argv[i++]) == 0) throwInput(); }
+    i=0;
+
+        // a. si diagNum est le premier argument
+    if ((argc-1) == 2) {
+        while (argv[1][i]) { if (!isdigit(argv[1][i++])) { diagPremier = false; break; } }
+    } else {
+        diagPremier = false;
+    }
+    i=0;
+
+        // b. si diagNum est le second argument
+    if (!diagPremier && (argc-1) == 2) {
+        while (argv[2][i]) { if (!isdigit(argv[2][i++])) { diagSecond = false; break; } }
+    } else {
+        diagSecond = false;
+    }
+
+    // 3. vérification de la position des pions de type "FEN"
+    switch (diagPremier) {
+        case true:
+
+        // a. assignation du numéro de diagramme
+        sscanf(argv[1], "%hhd", &numDiag);
+
+        // b. assignation de la fen si valide
+        fen = (char*)realloc(fen, strlen(argv[2])+1);
+        if (fenValide(argv[2])) strcpy(fen, argv[2]);
+        else throwInput(); break;
+
+        case false:
+        // a. assignation du numéro de diagramme
+        if (diagSecond) sscanf(argv[2], "%hhd", &numDiag);
+        else numDiag = rand() % 100;
+
+        // b. assignation de la fen si valide
+        fen = (char*)realloc(fen, strlen(argv[1])+1);
+        if (fenValide(argv[1])) strcpy(fen, argv[1]);
+        else throwInput(); break;
+    }
+
+    // 4. demande du nom de fichier de json sortie
     char option;
     printf("Souhaitez vous nommer le fichier de sortie? [%c/%c] ", REP_OUI, REP_NON);
     scanf("%c", &option);
     getchar();
 
-    if ((option == REP_OUI) | (option == REP_OUI + 32)) {
+    if (toupper(option) == REP_OUI) {
         printf("Comment souhaitez vous le nommer: ");
-        scanf("%s", nomFichier);
-        strcat(nomFichier, DEFAULT_EXTENSION);
-    } else if ((option == REP_NON) | (option == REP_NON -32)) {
+        fgets(nomFichier, LG_DESCRIPTION, stdin);
+        rmNewline(nomFichier); // suppression du \n
+    } else if (tolower(option) == REP_NON) {
         nomFichier = DEFAULT_FICHIER_NOM;
     } else {
-        throw();
+        throwInput();
     }
     printf("Le fichier de sortie sera: %s\n\n", nomFichier);
 
-    // 2. demander à l'utilisateur une chaine de description
+    // 5. demander à l'utilisateur une chaine de description
     option = REP_NON;
-    while ((option != REP_OUI + 32) & (option != REP_OUI)) {
+    while (toupper(option) != REP_OUI) {
         printf("Chaine de description (%d caractères max): ", LG_DESCRIPTION);
         fgets(description, LG_DESCRIPTION+1, stdin);
-        rmNewLine(description); // suppression du \n
+        rmNewline(description); // suppression du \n
 
         printf("La description sera: %s\n", description);
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
@@ -75,123 +124,42 @@ int main(int argc, char * argv[]) {
         getchar();
     }
 
-    //3. fen valide ? + création JSON
-    if (fenValide(argv[2])){
-        creationjs(argv[2], description, argv[1], nomFichier);
-    }else{
-        fprintf(stderr,"%serreur: fen non valide\n", "\x1B[31m");
-        exit(EXIT_FAILURE);
-    }
+    // 6. créer le fichier json de sortie
+    creationjs(fen, description, numDiag, nomFichier);
 
-
+    // 7. nettoyage global
     free(description);
     free(fen);
     return EXIT_SUCCESS;
 }
 
 // MARK: Implémentation
-/**
-*/
-void throw() {
-    fprintf(stderr, "%serreur: entrée non définie\n", "\x1B[31m");
-    exit(EXIT_FAILURE);
-}
-/**
-*/
-void nvcol(cJSON *array, const int nb, const int couleur) {
-    cJSON *col = cJSON_CreateObject();
-    cJSON_AddItemToArray(array, col);
-    cJSON_AddItemToObject(col, "nb", cJSON_CreateNumber(nb));
-    cJSON_AddItemToObject(col, "couleur", cJSON_CreateNumber(couleur));
-}
-/**
-*/
-int arrIntVersInt(const int e[], const int taille) {
-    int resultat = 0;
-    for (unsigned int i = 0; i < taille; ++i) {
-        resultat *= 10;
-        resultat += e[i];
-    }
-    return resultat;
-}
-/**
- */
-int nbcarVersInt(const char c) {
-    switch (c) {
-        case 'u': return 1;
-        case 'd': return 2;
-        case 't': return 3;
-        case 'q': return 4;
-        case 'c': return 5;
-        case 'U': return nbcarVersInt('u');
-        case 'D': return nbcarVersInt('d');
-        case 'T': return nbcarVersInt('t');
-        case 'Q': return nbcarVersInt('q');
-        case 'C': return nbcarVersInt('c');
-    }
-}
-/**
-*/
-char *rmNewLine(char s[]) {
-    s = strstr(s, "\n");
-    if(s != NULL) { strncpy(s, "\0", 1); }
-    return s;
-}
-/**
-*/
-bool fenValide(char *fen) {
-    unsigned int i=0, j=0, t=0, compte=0;
-    bool valide = false;
-
-    // nombre de pions
-    int chiffre[NBCASES];
-    while (fen[i] != ' ' && fen[i] != '\n') {
-        if((int)fen[i]<48 || (int)fen[i]>57){
-            i++;compte++;
-        }else{
-            chiffre[j]=cversi(fen[i]);
-            i++;j++;t++;
-        }
-    }
-    compte += arrIntVersInt(chiffre, t);
-
-    // trait
-    if (fen[i+1] == 'r' || fen[i+1] == 'j') valide = true;
-
-    return (compte == NBCASES && valide) ? true : false;
-}
-/**
-*/
-int cversi(const char c) {
-    return c-'0';
-}
-
-void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
+void creationjs(char *fen, char *description, octet numDiag, char *nomFichier) {
 	FILE *fichier; // flux d'écriture pour le fichier diag.js
 	cJSON *root, *cols, *col; // cJSON
 	int trait; // 0 pour vide, 1 pour jaune, 2 pour rouge
 
-	// 4. traduire le fen en trait
+	// 1. traduction de la fen en trait
     unsigned int i = 0;
     while (fen[i] != ' ') { ++i; }
 
     switch (fen[i+1]) {
         case 'j': trait = 1; break;
         case 'r': trait = 2; break;
-        default: throw(); break;
+        default: throwInput(); break;
     }
 
-    // 5. écrire l'information dans le fichier json
+    // 2. écrire l'information dans le fichier json
         // a. création d'un string json enregistrant le trait, description et fen de la partie
     root = cJSON_CreateObject(); // object json racine
     cols = cJSON_CreateArray(); // tableau json des positions
 
     cJSON_AddItemToObject(root, STR_TURN, cJSON_CreateNumber(trait));
-    cJSON_AddItemToObject(root, "numDiag", cJSON_CreateNumber(atoi(numDiag)));
+    cJSON_AddItemToObject(root, STR_NUMDIAG, cJSON_CreateNumber(numDiag));
     cJSON_AddItemToObject(root, STR_NOTES, cJSON_CreateString(description));
     cJSON_AddItemToObject(root, STR_FEN, cJSON_CreateString(fen));
 
-    // 6. traduction du fen en cols et ajout de la position des pions au json
+    // 3. traduction du fen en cols et ajout de la position des pions au json
     cJSON_AddItemToObject(root, STR_COLS, cols);
 
     int chiffre[NBCASES];
@@ -201,36 +169,36 @@ void creationjs(char *fen, char *description, char *numDiag, char *nomFichier){
         if (isdigit(fen[inc])) {
             int pos = inc;
             while (isdigit(fen[inc])) chiffre[t++] = cversi(fen[inc++]);
-            for (unsigned int j = pos; j < pos+arrIntVersInt(chiffre, t); ++j) nvcol(cols, 0, 0);
+            for (unsigned int j = pos; j < pos+aiversi(chiffre, t); ++j) nvcol(cols, 0, 0);
         }
 
         // est minuscule
-        if (islower(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 1);
+        if (islower(fen[inc])) nvcol(cols, fenversi(fen[inc++]), 1);
 
         // est majuscule
-        if (isupper(fen[inc])) nvcol(cols, nbcarVersInt(fen[inc++]), 2);
+        if (isupper(fen[inc])) nvcol(cols, fenversi(fen[inc++]), 2);
     }
 
-   // 7. ajout de l'entete au fichier json
+   // 4. ajout de l'entete au fichier json
     char jsonString[DEFAULT_JSON_TAILLE] = "traiterJson("; // string json final
     strcat(jsonString, cJSON_Print(root));
     strcat(jsonString, ");\n");
 
-    // 8. écriture du string json dans le fichier diag.js
-        // - ouverture ou création du fichier diag.js
+    // 5. écriture du string json dans le fichier diag.js
+        // a. ouverture ou création du fichier diag.js
     fichier = fopen(nomFichier, FICHIER_PERM);
 
-        // - vérification de la possibilité d'écriture
+        // b. vérification de la possibilité d'écriture
     if (fichier == NULL) {
         printf("Erreur d'ouverture du fichier %s", nomFichier);
     } else {
         fprintf(fichier, "%s", jsonString);
     }
 
-    // 8. nettoyage
+    // 6. nettoyage
     cJSON_Delete(root);
     fclose(fichier);
-}}
+}
 /**
 Crée une nouvelle objet contenant un attribut nombre et couleur à l'intérieur d'un array donnée
 
@@ -280,7 +248,7 @@ Supprime le saut de ligne présent dans la plupart des strings (le \n)
 - Paramètre s: correspond au string pour lequel on souhaite supprimer le saut de ligne
 - Retourne: le string d'entrée sans le saut de ligne s'il existait
 */
-char *rmNewLine(char s[]) {
+char *rmNewline(char s[]) {
     s = strstr(s, "\n");
     if (s != NULL) { strncpy(s, "\0", 1); }
     return s;
