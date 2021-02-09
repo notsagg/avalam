@@ -44,6 +44,12 @@ int main(int argc, char * argv[]) {
     	printf("Saisie commande invalide\nSaisir : diag.exe <numero_de_diagramme> <position_type_FEN>\n");
     	exit(EXIT_FAILURE);
     }
+    //vérification fen
+    if(!fenValide(argv[2])){
+        fprintf(stderr,"%serreur: fen non valide\n", "\x1B[31m");
+        exit(EXIT_FAILURE);
+    }
+
 
     // 1. demander à l'utilisateur le nom du fichier .js à écrire
     char option;
@@ -78,11 +84,7 @@ int main(int argc, char * argv[]) {
     //3. fen valide ? + création JSON
     if (fenValide(argv[2])){
         creationjs(argv[2], description, argv[1], nomFichier);
-    }else{
-        fprintf(stderr,"%serreur: fen non valide\n", "\x1B[31m");
-        exit(EXIT_FAILURE);
     }
-
 
     free(description);
     free(fen);
