@@ -2,7 +2,7 @@
 Standalone.exe est un jeux à deux joueurs. Chaque joueur saisie à son tour la pièce à déplacer (origine, destination). A chaque mouvement, un fichier json est généré enregistrant le trait, le score des jaunes et rouges, ainsi que la position de tous les pions sur le plateau.
 
 Le nom du fichier json généré peut être saisie au moment de l'exécution du programme sinon un nom par défaut sera employé.
-Par défaut le fichier de sortie json est généré dans ../build/web pour faciliter son emploi par avalam-refresh.html
+Par défaut le fichier de sortie json est généré dans ../build/web/data pour faciliter son emploi par avalam-refresh.html
 
 En exécution dynamique, ce programme nécessite les librairies libavalam.so ainsi que libcjson.so, veuillez donc mettre à jour votre variable d'environnement
 LD_LIBRARY_PATH comme ceci:
