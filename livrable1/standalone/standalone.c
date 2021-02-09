@@ -38,11 +38,11 @@ Notes:
 4. Le nom du fichier peut être passé en ligne de commandes
 5. Détecte la fin de la partie et affiche le score à l’écran
 */
-int main(int argc, char * argv[]) {
+int main(int argc, char *argv[]) {
     fichierNom = (char*)malloc(strlen(DEFAULT_FICHIER_NOM)+1); // nom du fichier d'écriture en sortie
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     octet coupOrigine = 0, coupDestination = 0;
-    int trait = 1; // 1 pour jaune, 2 pour rouge
+    int trait = JAU; // 1 pour jaune, 2 pour rouge
 
     // 1. lecture du fichier de sortie à l'execution du programme
     switch (argc-1) {
@@ -94,7 +94,7 @@ int main(int argc, char * argv[]) {
         pos = jouerCoup(pos, coupOrigine, coupDestination);
 
         // d. changer le trait
-        trait = (trait == 1) ? 2 : 1;
+        trait = (trait == JAU) ? ROU : JAU;
 
         // e. mettre à jour le score pour les deux joueurs
         score = evaluerScore(pos);
