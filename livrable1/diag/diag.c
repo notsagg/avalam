@@ -139,7 +139,6 @@ int main(int argc, char *argv[]) {
         printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
         system(command); // initiation d'une ligne de commande intéractive
         fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
-        //###################################################################################
         char carac;
         i =0;
         do{
@@ -147,9 +146,12 @@ int main(int argc, char *argv[]) {
             description[i]=carac;
             i++;
         } while (carac!= EOF);
-        description[i-1]='\0';
-        //#####################################################################################
-        //fgets(description, LG_DESCRIPTION+1, fichier);
+        if (i-1>LG_DESCRIPTION){
+            printf("\n");
+            throw("La description est trop longue");
+        }else{
+            description[i-1]='\0';
+        }
         fclose(fichier);
 
         printf("\nLa description sera: \"%s\"\n", description);
