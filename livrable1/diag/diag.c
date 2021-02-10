@@ -135,39 +135,24 @@ int main(int argc, char *argv[]) {
     strcpy(command, INTER_COMMAND);
     strcat(command, FICHIER_NOM_DESCRIPTION);
     option = REP_NON;
-<<<<<<< HEAD
-    while ((option != REP_OUI + 32) & (option != REP_OUI)) {
-        printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
-        
-        //test de la saise de la chaine dans un mode interractif
-        
-        //fgets(description, LG_DESCRIPTION+1, stdin);
-        //rmNewLine(description); // suppression du \n
-        system("cat > desc.txt");
-        FILE *desc;
-        desc = fopen("desc.txt","r");
-        int l=0;
-        char carac;
-        do{   
-            carac= fgetc(desc);
-            description[l] = carac;
-            l++;  
-        }while (carac != EOF);
-        description[LG_DESCRIPTION-1]='\0';
-        fclose(desc);
-        
-        printf("\nLa description sera: \"%s\"\n", description);
-=======
-
     while (toupper(option) != REP_OUI) {
         printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
         system(command); // initiation d'une ligne de commande intéractive
         fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
-        fgets(description, LG_DESCRIPTION+1, fichier);
+        //###################################################################################
+        char carac;
+        i =0;
+        do{
+            carac = fgetc(fichier);
+            description[i]=carac;
+            i++;
+        } while (carac!= EOF);
+        description[i-1]='\0';
+        //#####################################################################################
+        //fgets(description, LG_DESCRIPTION+1, fichier);
         fclose(fichier);
 
-        printf("\nLa description sera: %s\n", description);
->>>>>>> origin/diag-gaston
+        printf("\nLa description sera: \"%s\"\n", description);
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
         scanf("%c", &option);
         getchar();
@@ -188,13 +173,6 @@ int main(int argc, char *argv[]) {
         // b. traduction du fen en cols et ajout de la position des pions au json
     cJSON_AddItemToObject(root, STR_COLS, cols);
 
-<<<<<<< HEAD
-    //3. fen valide ? + création JSON
-    if (fenValide(argv[2])){
-        creationjs(argv[2], description, argv[1], nomFichier);
-    }
-
-=======
     int chiffre[NBCASES];
     unsigned int inc=0, t;
     while (fen[inc] != ' ') {
@@ -242,7 +220,6 @@ int main(int argc, char *argv[]) {
 
     // 10. nettoyage global
     free(fichierNom);
->>>>>>> origin/diag-gaston
     free(description);
     free(fen);
     free(jsonString);
