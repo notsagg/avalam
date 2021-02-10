@@ -35,7 +35,8 @@
 #define COLNAME(c) ((c == ROU) ? "rouge" : "jaune")
 
 // Exports JSON
-#define FICHIER_PERM "w"
+#define FICHIER_PERM_WRITE "w"
+#define FICHIER_PERM_READ "r"
 #define JS_ENTETE_OUVRANT "traiterJson("
 #define JS_ENTETE_FERMANT ");\n"
 #define CJSON_BUFFER_TAILLE 256
@@ -51,7 +52,7 @@
 #define STR_SCORE_R "scoreR"
 #define STR_SCORE_R5 "scoreR5"
 
-#define STR_NUMDIAG "\"numDiag\""
+#define STR_NUMDIAG "numDiag"
 #define STR_NOTES "notes"
 
 #define STR_COUPS "\"coups\""
