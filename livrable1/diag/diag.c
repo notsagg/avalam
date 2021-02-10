@@ -15,6 +15,12 @@
 #include <avalam.h>
 #include <topologie.h>
 
+#ifdef __DEBUG__
+    #define DBG 1
+#else
+    #define DBG 0
+#endif
+
 // MARK: Constantes
 #define DEFAULT_FICHIER_NOM "../web/exemples/diag_initial.js"
 #define FICHIER_NOM_DESCRIPTION "diag-desc.txt"
@@ -188,7 +194,16 @@ int main(int argc, char *argv[]) {
     if (fichier == NULL) throwFile(fichierNom);
     else fputs(jsString, fichier);
 
-    // 9. nettoyage global
+    // 9. mode debug
+    if (DBG) {
+        printf("%s", "\x1B[33m");
+        printf("[  trait  ]   %d\n", trait);
+        printf("[ numdiag ]   diag n°%d\n", numDiag);
+        printf("[   fen   ]   %s\n", fen);
+        printf("%s\n", "\x1B[0m");
+    }
+
+    // 10. nettoyage global
     free(fichierNom);
     free(description);
     free(fen);
