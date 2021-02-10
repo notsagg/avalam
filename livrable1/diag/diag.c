@@ -17,6 +17,8 @@
 
 // MARK: Constantes
 #define DEFAULT_FICHIER_NOM "../web/exemples/diag_initial.js"
+#define FICHIER_NOM_DESCRIPTION "diag-desc.txt"
+#define INTER_COMMAND "cat >"
 #define LG_DESCRIPTION 45
 #define REP_OUI 'Y'
 #define REP_NON 'n'
@@ -117,17 +119,25 @@ int main(int argc, char *argv[]) {
     printf("Le fichier de sortie sera: %s\n\n", fichierNom);
 
     // 6. demander à l'utilisateur une chaine de description
+    char *command = (char*)malloc(strlen(INTER_COMMAND)+strlen(FICHIER_NOM_DESCRIPTION)+1);
+    strcpy(command, INTER_COMMAND);
+    strcat(command, FICHIER_NOM_DESCRIPTION);
     option = REP_NON;
-    while (toupper(option) != REP_OUI) {
-        printf("Chaine de description (%d caractères max): ", LG_DESCRIPTION);
-        fgets(description, LG_DESCRIPTION+1, stdin);
-        rmNewline(description); // suppression du \n
 
-        printf("La description sera: %s\n", description);
+    while (toupper(option) != REP_OUI) {
+        printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
+        system(command); // initiation d'une ligne de commande intéractive
+        fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
+        fgets(description, LG_DESCRIPTION+1, fichier);
+        fclose(fichier);
+
+        printf("\nLa description sera: %s\n", description);
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
         scanf("%c", &option);
         getchar();
     }
+    free(command);
+    remove(FICHIER_NOM_DESCRIPTION);
 
     // 7. génération d'un string json
         // a. création d'un string json enregistrant le trait, description et fen de la partie
@@ -172,7 +182,7 @@ int main(int argc, char *argv[]) {
     strcat(jsString, JS_ENTETE_FERMANT);
 
         // e. ouverture ou création du fichier diag.js
-    fichier = fopen(fichierNom, FICHIER_PERM);
+    fichier = fopen(fichierNom, FICHIER_PERM_WRITE);
 
         // f. vérification de la possibilité d'écriture
     if (fichier == NULL) throwFile(fichierNom);

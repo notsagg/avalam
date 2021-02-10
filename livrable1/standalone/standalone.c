@@ -188,7 +188,7 @@ void creationjs(T_Position pos, T_Score score, int trait) {
 
     // 3. enregistrement du string json dans le fichier d'écriture
         // a. ouverture ou créeation du fichier de sortie
-    fichier = fopen(fichierNom, FICHIER_PERM);
+    fichier = fopen(fichierNom, FICHIER_PERM_WRITE);
 
         // b. vérification de la possibilité d'écriture
     if (fichier == NULL) throwFile(fichierNom);
