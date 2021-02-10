@@ -115,28 +115,42 @@ int main(int argc, char *argv[]) {
 
     // 5. demande du nom de fichier de json sortie
     char option;
-    printf("Souhaitez vous nommer le fichier de sortie? [%c/%c] ", REP_OUI, REP_NON);
-    scanf("%c", &option);
-    getchar();
-
-    if (toupper(option) == REP_OUI) {
-        printf("Comment souhaitez vous le nommer: ");
-        fgets(fichierNom, LG_DESCRIPTION, stdin);
-        rmNewline(fichierNom); // suppression du \n
-    } else if (tolower(option) == REP_NON) {
+    char *p;
+    printf("Saisir nom du fichier : ");
+    fgets(fichierNom, LG_DESCRIPTION, stdin);
+    if(strcmp(fichierNom, "\n")==0){
         strcpy(fichierNom, DEFAULT_FICHIER_NOM);
-    } else {
-        throwInput();
     }
-    printf("Le fichier de sortie sera: %s\n\n", fichierNom);
+    if ((p = strchr(fichierNom, '\n')) != NULL) *p = '\0';
+    strcmp(fichierNom, p);
+    printf("\nLe fichier de sortie sera: %s\n\n", fichierNom);
 
     // 6. demander à l'utilisateur une chaine de description
     char *command = (char*)malloc(strlen(INTER_COMMAND)+strlen(FICHIER_NOM_DESCRIPTION)+1);
     strcpy(command, INTER_COMMAND);
     strcat(command, FICHIER_NOM_DESCRIPTION);
     option = REP_NON;
+<<<<<<< HEAD
     while (toupper(option) != REP_OUI) {
         printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
+=======
+
+    char *description2 = (char*)malloc(LG_DESCRIPTION+1);
+    strcpy(description, "\0");
+
+    printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
+    fgets(description, LG_DESCRIPTION, stdin);
+    if ((p = strchr(description, '\n')) != NULL) *p = '\0';
+    strcmp(description, p);
+    //printf("%s\n", description);
+    fgets(description2, LG_DESCRIPTION, stdin);
+    if ((p = strchr(description2, '\n')) != NULL) *p = '\0';
+    strcmp(description2, p);
+    strcat(description, description2);
+    //printf("%s\n", description);
+    if(strcmp(description, "\0")){
+        //printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
+>>>>>>> origin/diag-urban
         system(command); // initiation d'une ligne de commande intéractive
         fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
         char carac;
@@ -153,14 +167,18 @@ int main(int argc, char *argv[]) {
             description[i-1]='\0';
         }
         fclose(fichier);
+<<<<<<< HEAD
 
         printf("\nLa description sera: \"%s\"\n", description);
         printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
         scanf("%c", &option);
         getchar();
+=======
+        free(command);
+        remove(FICHIER_NOM_DESCRIPTION);
+        printf("\n");
+>>>>>>> origin/diag-urban
     }
-    free(command);
-    remove(FICHIER_NOM_DESCRIPTION);
 
     // 7. génération d'un string json
         // a. création d'un string json enregistrant le trait, description et fen de la partie
@@ -223,6 +241,7 @@ int main(int argc, char *argv[]) {
     // 10. nettoyage global
     free(fichierNom);
     free(description);
+    free(description2);
     free(fen);
     free(jsonString);
     free(jsString);
@@ -298,7 +317,6 @@ int cversi(const char c) {
 }
 /**
 Convertit un tableau d'entier en entier
-
 - Paramètre e: tableau d'entier à faire convertir
 - Paramètre taille: du tableau à faire convertir
 - Retourne: un entier qui correspond aux chiffres stockés dans chaque cases du tableau d'entiers
