@@ -31,7 +31,7 @@
 
 // MARK: Prototypes de fonctions
 void nvcol(cJSON *array, const int nb, const int couleur);
-bool fenValide(char *fen);
+int fenCount(char *fen);
 char *rmNewline(char*);
 int cversi(const char);
 int aiversi(const int*, const int);
@@ -101,17 +101,11 @@ int main(int argc, char *argv[]) {
         fenIndex = 1;
         break;
     }
-    //vérification fen
-    if(!fenValide(argv[2])){
-        fprintf(stderr,"%serreur: fen non valide\n", "\x1B[31m");
-        exit(EXIT_FAILURE);
-    }
-
-
-    // 4. assignation de la fen si valide
+   
+    // 4. assignation de la fen
     fen = (char*)realloc(fen, strlen(argv[fenIndex])+1);
-    if (fenValide(argv[fenIndex])) strcpy(fen, argv[fenIndex]);
-    else throwInput();
+    strcpy(fen, argv[fenIndex]);
+   
 
     // 5. demande du nom de fichier de json sortie
     char option;
@@ -130,55 +124,27 @@ int main(int argc, char *argv[]) {
     strcpy(command, INTER_COMMAND);
     strcat(command, FICHIER_NOM_DESCRIPTION);
     option = REP_NON;
-<<<<<<< HEAD
-    while (toupper(option) != REP_OUI) {
-        printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
-=======
 
     char *description2 = (char*)malloc(LG_DESCRIPTION+1);
     strcpy(description, "\0");
-
+    
     printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
-    fgets(description, LG_DESCRIPTION, stdin);
-    if ((p = strchr(description, '\n')) != NULL) *p = '\0';
-    strcmp(description, p);
-    //printf("%s\n", description);
-    fgets(description2, LG_DESCRIPTION, stdin);
-    if ((p = strchr(description2, '\n')) != NULL) *p = '\0';
-    strcmp(description2, p);
-    strcat(description, description2);
-    //printf("%s\n", description);
-    if(strcmp(description, "\0")){
-        //printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
->>>>>>> origin/diag-urban
-        system(command); // initiation d'une ligne de commande intéractive
-        fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
-        char carac;
-        i =0;
-        do{
-            carac = fgetc(fichier);
-            description[i]=carac;
-            i++;
-        } while (carac!= EOF);
-        if (i-1>LG_DESCRIPTION){
-            printf("\n");
-            throw("La description est trop longue");
-        }else{
-            description[i-1]='\0';
-        }
-        fclose(fichier);
-<<<<<<< HEAD
-
-        printf("\nLa description sera: \"%s\"\n", description);
-        printf("Valider? [%c/%c] ", REP_OUI, REP_NON);
-        scanf("%c", &option);
-        getchar();
-=======
-        free(command);
-        remove(FICHIER_NOM_DESCRIPTION);
-        printf("\n");
->>>>>>> origin/diag-urban
-    }
+    system(command); // initiation d'une ligne de commande intéractive
+    fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
+    char carac;
+    i =0;
+    do{
+        carac = fgetc(fichier);
+        description[i]=carac;
+        i++;
+    } while (carac!= EOF && i<LG_DESCRIPTION);
+    i=0;
+    while (description[i]!='\0') i++;
+    description[i-1]='\0';//suppression du ctrl+d
+    fclose(fichier);
+    free(command);
+    remove(FICHIER_NOM_DESCRIPTION);
+    printf("\n");
 
     // 7. génération d'un string json
         // a. création d'un string json enregistrant le trait, description et fen de la partie
@@ -194,19 +160,36 @@ int main(int argc, char *argv[]) {
     cJSON_AddItemToObject(root, STR_COLS, cols);
 
     int chiffre[NBCASES];
-    unsigned int inc=0, t;
-    while (fen[inc] != ' ') {
+    unsigned int t;
+    i=0;
+    int compte = fenCount(fen);
+    while(fen[i]!=' '){
         // est chiffre
-        if (isdigit(fen[inc])) {
-            int pos = inc; t=0;
-            while (isdigit(fen[inc])) chiffre[t++] = cversi(fen[inc++]);
-            for (unsigned int j = pos; j < pos+aiversi(chiffre, t); ++j) nvcol(cols, 0, 0);
+        if (isdigit(fen[i])) {
+            t=0;
+            int debut = i;
+            int j;
+            while (isdigit(fen[i])){ 
+                chiffre[t] = cversi(fen[i]);
+                t++;i++;
+            }
+            for (j = debut; j < debut+aiversi(chiffre, t); ++j) nvcol(cols, 0, 0);
+            i--;
         }
         // est minuscule
-        if (islower(fen[inc])) nvcol(cols, fenversi(fen[inc++]), 1);
+        else if (islower(fen[i])){ 
+            if(fenversi(fen[i])==0) nvcol(cols,fenversi(fen[i]),0);
+            else nvcol(cols, fenversi(fen[i]), 1);
+        }
         // est majuscule
-        if (isupper(fen[inc])) nvcol(cols, fenversi(fen[inc++]), 2);
+        else{ 
+            if(fenversi(fen[i])==0) nvcol(cols,fenversi(fen[i]),0);
+            else nvcol(cols, fenversi(fen[i]), 2);
+        //caractère non attendu
+        }
+        i++;
     }
+
 
     // 8. écriture de l'information dans le fichier de sortie
         // a. création d'un string js contenant une entete ouvrante et fermante ainsi que le string json
@@ -265,16 +248,13 @@ void nvcol(cJSON *array, const int nb, const int couleur) {
     cJSON_AddItemToObject(col, STR_COULEUR, cJSON_CreateNumber(couleur));
 }
 /**
-Valide la fen donnée en entrée selon le critère de somme est égal à 48 et trait jaune (j) ou rouge (r)
+Indique le nombre de cases que contiendra le plateau avec cette fen, en fonction des caractères rencontrés
 
-- Paramètre fen: à faire valider par la fonction
-- Retourne: un boolean indiquant si la chaine est valide ou non
+- Paramètre fen: chaîne sur laquelle on compte le nombre de cases
+- Retourne: un entier indiquant le nombre total de cases 
 */
-bool fenValide(char *fen) {
+int fenCount(char *fen) {
     unsigned int i=0, j=0, compte=0;
-    bool valide = false;
-
-    // validation du nombres de pions donné par la fen
     int chiffre[NBCASES];
     while (fen[i] != ' ' && fen[i] != '\n' && fen[i] != '\0') {
         if (!isdigit(fen[i])) {
@@ -287,13 +267,7 @@ bool fenValide(char *fen) {
         j=0;
         ++i;
     }
-
-    // validation du trait
-    if (fen[i+1] == 'r' || fen[i+1] == 'j') valide = true;
-    trait = (fen[i+1] == 'r') ? 2 : 1;
-
-    // si le compte vaut 48 et le trait est valide alors la fen est valide
-    return (compte == NBCASES && valide);
+    return compte;
 }
 /**
 Supprime le saut de ligne présent dans la plupart des strings (le \n)
@@ -347,5 +321,6 @@ int fenversi(const char c) {
         case 'T': return fenversi('t');
         case 'Q': return fenversi('q');
         case 'C': return fenversi('c');
+        default : return 0;
     }
 }
