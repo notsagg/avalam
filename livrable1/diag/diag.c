@@ -101,50 +101,93 @@ int main(int argc, char *argv[]) {
         fenIndex = 1;
         break;
     }
-   
     // 4. assignation de la fen
     fen = (char*)realloc(fen, strlen(argv[fenIndex])+1);
     strcpy(fen, argv[fenIndex]);
    
+    //il faut tester si la premiere ligne de stdin est vide
+    //char *test = (char *)malloc(LG_DESCRIPTION+1);
+    //fgets(test,LG_DESCRIPTION+1,stdin);
+    //printf("longueur de la première ligne de stdin : %ld\n",strlen(test));
+    //free(test);
+    //problème car si stdin est vide, démarre un mode interractif
+    //il faut trouver le bon test
+    if(0){
+        //stdin vide => pas de redirection
+        // 5. demande du nom de fichier de json sortie
+        char option;
+        char *p;
+        printf("Saisir nom du fichier : ");
+        fgets(fichierNom, LG_DESCRIPTION, stdin);
+        if(strcmp(fichierNom, "\n")==0){
+            strcpy(fichierNom, DEFAULT_FICHIER_NOM);
+        }
+        if ((p = strchr(fichierNom, '\n')) != NULL) *p = '\0';
+        strcmp(fichierNom, p);
+        printf("\nLe fichier de sortie sera: %s\n\n", fichierNom);
 
-    // 5. demande du nom de fichier de json sortie
-    char option;
-    char *p;
-    printf("Saisir nom du fichier : ");
-    fgets(fichierNom, LG_DESCRIPTION, stdin);
-    if(strcmp(fichierNom, "\n")==0){
-        strcpy(fichierNom, DEFAULT_FICHIER_NOM);
+        // 6. demander à l'utilisateur une chaine de description
+        char *command = (char*)malloc(strlen(INTER_COMMAND)+strlen(FICHIER_NOM_DESCRIPTION)+1);
+        strcpy(command, INTER_COMMAND);
+        strcat(command, FICHIER_NOM_DESCRIPTION);
+        option = REP_NON;
+
+        char *description2 = (char*)malloc(LG_DESCRIPTION+1);
+        strcpy(description, "\0");
+        
+        printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
+        system(command); // initiation d'une ligne de commande intéractive
+        fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
+        char carac;
+        i =0;
+        do{
+            carac = fgetc(fichier);
+            description[i]=carac;
+            i++;
+        } while (carac!= EOF && i<LG_DESCRIPTION);
+        i=0;
+        while (description[i]!='\0') i++;
+        description[i-1]='\0';//suppression du ctrl+d
+        fclose(fichier);
+        free(command);
+        remove(FICHIER_NOM_DESCRIPTION);
+        printf("\n");
+        free(description2);
+    }else{
+        //stdin non vide =>redirection
+        //le fichier a été écris avant => il faut se placer au début de stdin, car on s'est déplacé 
+        //pour tester si stdin était vide
+        fseek(stdin,0,SEEK_SET);
+        char *recup = (char*)malloc(LG_DESCRIPTION+1);
+        fgets(recup,LG_DESCRIPTION+1,stdin);
+        strcpy(fichierNom,rmNewline(recup));
+        free(recup);
+        char carac;
+        int i=0;
+        do{
+            carac = fgetc(stdin);
+            description[i] = carac;
+            i++;
+        }while(carac != EOF && strlen(description)<LG_DESCRIPTION+1);
+        description[strlen(description)-1] = '\0';
+        printf("Le fichier de sortie sera : %s\n", fichierNom);
+        printf("description : \"%s\"\n",description);
     }
-    if ((p = strchr(fichierNom, '\n')) != NULL) *p = '\0';
-    strcmp(fichierNom, p);
-    printf("\nLe fichier de sortie sera: %s\n\n", fichierNom);
-
-    // 6. demander à l'utilisateur une chaine de description
-    char *command = (char*)malloc(strlen(INTER_COMMAND)+strlen(FICHIER_NOM_DESCRIPTION)+1);
-    strcpy(command, INTER_COMMAND);
-    strcat(command, FICHIER_NOM_DESCRIPTION);
-    option = REP_NON;
-
-    char *description2 = (char*)malloc(LG_DESCRIPTION+1);
-    strcpy(description, "\0");
+    //remplacement des \n dans la description par des <br />pour faire un retour à la ligne dans le html
     
-    printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
-    system(command); // initiation d'une ligne de commande intéractive
-    fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
-    char carac;
-    i =0;
-    do{
-        carac = fgetc(fichier);
-        description[i]=carac;
-        i++;
-    } while (carac!= EOF && i<LG_DESCRIPTION);
+
+    //recherche du trait dans la fen, fonctionne si il n'y a pas d'espace
     i=0;
-    while (description[i]!='\0') i++;
-    description[i-1]='\0';//suppression du ctrl+d
-    fclose(fichier);
-    free(command);
-    remove(FICHIER_NOM_DESCRIPTION);
-    printf("\n");
+    while(fen[i]!='r' && fen[i]!='j' && i<NBCASES) i++;
+    switch (fen[i])
+    {
+    case 'r': trait = 2;
+        break;
+    case 'j': trait = 1;
+        break;
+    default: trait =0;
+        break;
+    }
 
     // 7. génération d'un string json
         // a. création d'un string json enregistrant le trait, description et fen de la partie
@@ -224,7 +267,6 @@ int main(int argc, char *argv[]) {
     // 10. nettoyage global
     free(fichierNom);
     free(description);
-    free(description2);
     free(fen);
     free(jsonString);
     free(jsString);
@@ -275,9 +317,10 @@ Supprime le saut de ligne présent dans la plupart des strings (le \n)
 - Paramètre s: correspond au string pour lequel on souhaite supprimer le saut de ligne
 - Retourne: le string d'entrée sans le saut de ligne s'il existait
 */
-char *rmNewline(char s[]) {
-    s = strstr(s, "\n");
-    if (s != NULL) { strncpy(s, "\0", 1); }
+char *rmNewline(char s[]) { 
+    int i=0;
+    while(s[i]!='\n')i++;
+    s[i]='\0';   
     return s;
 }
 /**
