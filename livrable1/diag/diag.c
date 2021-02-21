@@ -108,13 +108,7 @@ int main(int argc, char *argv[]) {
     fen = (char*)realloc(fen, strlen(argv[fenIndex])+1);
     strcpy(fen, argv[fenIndex]);
    
-    //il faut tester si la premiere ligne de stdin est vide
-    //char *test = (char *)malloc(LG_DESCRIPTION+1);
-    //fgets(test,LG_DESCRIPTION+1,stdin);
-    //printf("longueur de la première ligne de stdin : %ld\n",strlen(test));
-    //free(test);
-    //problème car si stdin est vide, démarre un mode interractif
-    //il faut trouver le bon test
+    //il faut tester si le stdin est vide 
     if(isatty(fileno(stdin))){
         //stdin vide => pas de redirection
         // 5. demande du nom de fichier de json sortie
@@ -139,7 +133,7 @@ int main(int argc, char *argv[]) {
         strcpy(description, "\0");
         
         printf("Chaine de description (%d caractères max): \n", LG_DESCRIPTION);
-        system(command); // initiation d'une ligne de commande intéractive
+        system(command); //ligne de commande intéractive
         fichier = fopen(FICHIER_NOM_DESCRIPTION, FICHIER_PERM_READ);
         char carac;
         i =0;
@@ -158,9 +152,6 @@ int main(int argc, char *argv[]) {
         free(description2);
     }else{
         //stdin non vide =>redirection
-        //le fichier a été écris avant => il faut se placer au début de stdin, car on s'est déplacé 
-        //pour tester si stdin était vide
-        fseek(stdin,0,SEEK_SET);
         char *recup = (char*)malloc(LG_DESCRIPTION+1);
         do{
             fgets(recup,LG_DESCRIPTION+1,stdin);
