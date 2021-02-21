@@ -5,6 +5,9 @@
 //  Crée par Urban Prevost, Romain Lefebvre, Paul Bezeau et Gaston Pelletier le 04/02/21
 //
 
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,7 +81,7 @@ int main(int argc, char *argv[]) {
     } else {
         diagSecond = false;
     }
-
+    
     // 3. assignation du numéro de diagramme selon sa position
     int fenIndex;
     switch (diagPremier) {
@@ -112,7 +115,7 @@ int main(int argc, char *argv[]) {
     //free(test);
     //problème car si stdin est vide, démarre un mode interractif
     //il faut trouver le bon test
-    if(0){
+    if(isatty(fileno(stdin))){
         //stdin vide => pas de redirection
         // 5. demande du nom de fichier de json sortie
         char option;
@@ -159,19 +162,27 @@ int main(int argc, char *argv[]) {
         //pour tester si stdin était vide
         fseek(stdin,0,SEEK_SET);
         char *recup = (char*)malloc(LG_DESCRIPTION+1);
-        fgets(recup,LG_DESCRIPTION+1,stdin);
-        strcpy(fichierNom,rmNewline(recup));
+        do{
+            fgets(recup,LG_DESCRIPTION+1,stdin);
+            recup = rmNewline(recup);
+        }while(strcmp(recup, "\0")==0);
+        strcpy(fichierNom,recup);
         free(recup);
         char carac;
         int i=0;
+        int y =0;
         do{
+            
             carac = fgetc(stdin);
             description[i] = carac;
             i++;
-        }while(carac != EOF && strlen(description)<LG_DESCRIPTION+1);
+            if(strcmp(&carac, "\n")==1){
+                y++;
+            }
+        }while(carac != EOF && strlen(description)<LG_DESCRIPTION+1 && y<2);
         description[strlen(description)-1] = '\0';
         printf("Le fichier de sortie sera : %s\n", fichierNom);
-        printf("description : \"%s\"\n",description);
+        printf("description : \n\"%s\"\n",description);
     }
     //remplacement des \n dans la description par des <br />pour faire un retour à la ligne dans le html
     
@@ -318,8 +329,9 @@ Supprime le saut de ligne présent dans la plupart des strings (le \n)
 - Retourne: le string d'entrée sans le saut de ligne s'il existait
 */
 char *rmNewline(char s[]) { 
+    //printf("%s\n", s);
     int i=0;
-    while(s[i]!='\n')i++;
+    while(s[i]!='\n' && s[i]!='\0')i++;
     s[i]='\0';   
     return s;
 }
