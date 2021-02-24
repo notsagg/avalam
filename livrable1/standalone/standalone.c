@@ -105,13 +105,13 @@ int main(int argc, char *argv[]) {
         // g. mode debug
         if (DBG) {
             printf("%s", "\x1B[33m");
-            printf("[     trait      ]   %d\n", trait);
-            printf("[     scoreJ     ]   %d\n", score.nbJ);
-            printf("[     scoreJ5    ]   %d\n", score.nbJ5);
-            printf("[     scoreR     ]   %d\n", score.nbR);
-            printf("[     scoreR5    ]   %d\n", score.nbR5);
-            printf("[ coups restants ]   %d\n", getCoupsLegaux(pos).nb);
-            printf("[     en tête    ]   %s\n", (score.nbJ+score.nbJ5) > (score.nbR+score.nbR5) ? STR_J: STR_R);
+            printf("[         trait         ]   %d\n", trait);
+            printf("[         scoreJ        ]   %d\n", score.nbJ);
+            printf("[         scoreJ5       ]   %d\n", score.nbJ5);
+            printf("[         scoreR        ]   %d\n", score.nbR);
+            printf("[         scoreR5       ]   %d\n", score.nbR5);
+            printf("[ coups légaux restants ]   %d\n", getCoupsLegaux(pos).nb);
+            printf("[         en tête       ]   %s\n", (score.nbJ+score.nbJ5) > (score.nbR+score.nbR5) ? STR_J: STR_R);
             printf("%s\n", "\x1B[0m");
         }
     }

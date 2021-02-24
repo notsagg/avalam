@@ -161,16 +161,11 @@ int main(int argc, char *argv[]) {
         free(recup);
         char carac;
         int i=0;
-        int y =0;
         do{
-            
             carac = fgetc(stdin);
             description[i] = carac;
             i++;
-            if(strcmp(&carac, "\n")==1){
-                y++;
-            }
-        }while(carac != EOF && strlen(description)<LG_DESCRIPTION+1 && y<2);
+        }while(carac != EOF && strlen(description)<LG_DESCRIPTION+1);
         description[strlen(description)-1] = '\0';
         printf("Le fichier de sortie sera : %s\n", fichierNom);
         printf("description : \n\"%s\"\n",description);
