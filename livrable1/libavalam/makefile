@@ -18,6 +18,7 @@ libavalam.a : libavalam.c
 	ar qvs libavalam.a libavalam.o
 	rm libavalam.o
 
+# ajout de la librairie cJSON pour faciliter l'écriture des fichier
 libcJSON.so: ../include/cJSON.c
 	gcc -shared -fPIC ../include/cJSON.c -o ../build/lib/libcJSON.so
 

@@ -14,6 +14,7 @@ install: standalone.static standalone.exe
 LIB=-L../build/lib
 INC=-I../include
 
+# ajout de la librairie cJSON pour faciliter l'écriture des fichier
 standalone.exe:standalone.c
 	gcc $(DEBUG) $(LIB) $(INC) standalone.c -o standalone.exe -lavalam -lcJSON
 
