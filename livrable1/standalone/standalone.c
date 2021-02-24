@@ -38,11 +38,11 @@ Notes:
 4. Le nom du fichier peut être passé en ligne de commandes
 5. Détecte la fin de la partie et affiche le score à l’écran
 */
-int main(int argc, char * argv[]) {
+int main(int argc, char *argv[]) {
     fichierNom = (char*)malloc(strlen(DEFAULT_FICHIER_NOM)+1); // nom du fichier d'écriture en sortie
     T_Score score = { 0, 0, 0, 0 }; // score des rouges et jaunes
     octet coupOrigine = 0, coupDestination = 0;
-    int trait = 1; // 1 pour jaune, 2 pour rouge
+    int trait = JAU; // 1 pour jaune, 2 pour rouge
 
     // 1. lecture du fichier de sortie à l'execution du programme
     switch (argc-1) {
@@ -94,7 +94,7 @@ int main(int argc, char * argv[]) {
         pos = jouerCoup(pos, coupOrigine, coupDestination);
 
         // d. changer le trait
-        trait = (trait == 1) ? 2 : 1;
+        trait = (trait == JAU) ? ROU : JAU;
 
         // e. mettre à jour le score pour les deux joueurs
         score = evaluerScore(pos);
@@ -105,18 +105,38 @@ int main(int argc, char * argv[]) {
         // g. mode debug
         if (DBG) {
             printf("%s", "\x1B[33m");
-            printf("[     trait      ]   %d\n", trait);
-            printf("[     scoreJ     ]   %d\n", score.nbJ);
-            printf("[     scoreJ5    ]   %d\n", score.nbJ5);
-            printf("[     scoreR     ]   %d\n", score.nbR);
-            printf("[     scoreR5    ]   %d\n", score.nbR5);
-            printf("[ coups restants ]   %d\n", getCoupsLegaux(pos).nb);
-            printf("[     en tête    ]   %s\n", (score.nbJ+score.nbJ5) > (score.nbR+score.nbR5) ? STR_J: STR_R);
+            printf("[         trait         ]   %d\n", trait);
+            printf("[         scoreJ        ]   %d\n", score.nbJ);
+            printf("[         scoreJ5       ]   %d\n", score.nbJ5);
+            printf("[         scoreR        ]   %d\n", score.nbR);
+            printf("[         scoreR5       ]   %d\n", score.nbR5);
+            printf("[ coups légaux restants ]   %d\n", getCoupsLegaux(pos).nb);
+            printf("[         en tête       ]   %s\n", (score.nbJ+score.nbJ5) > (score.nbR+score.nbR5) ? STR_J: STR_R);
             printf("%s\n", "\x1B[0m");
         }
     }
 
-    // 4. nettoyage global
+    // 4. affichage du vainqueur
+    printf("Bon jeux - ");
+    if (score.nbJ > score.nbR) { // cas où les jaunes sont vainqueur
+        printf("Les jaunes (J) sont vainqueurs\n");
+    } else if (score.nbJ < score.nbR) { // cas où les rouges sont vainqueur
+        printf("Les rouges (R) sont vainqueurs\n");
+    } else { // cas d'égalité
+        if (score.nbJ5 > score.nbR5) { // cas où les jaunes sont vainqueur
+            printf("Les jaunes (J) sont vainqueurs\n");
+        } else if (score.nbJ5 < score.nbR5) { // cas où les rouges sont vainqueur
+            printf("Les rouges (R) sont vainqueurs\n");
+        } else { // cas d'égalité
+            printf("Egalité entre les J et R\n");
+        }
+    }
+
+    // 5. affiche du score en fin de partie
+    afficherScore(score);
+    printf("\n");
+
+    // 6. nettoyage global
     free(fichierNom);
     fichierNom = NULL;
     return EXIT_SUCCESS;
@@ -168,16 +188,15 @@ void creationjs(T_Position pos, T_Score score, int trait) {
 
     // 3. enregistrement du string json dans le fichier d'écriture
         // a. ouverture ou créeation du fichier de sortie
-    fichier = fopen(fichierNom, FICHIER_PERM);
+    fichier = fopen(fichierNom, FICHIER_PERM_WRITE);
 
         // b. vérification de la possibilité d'écriture
-    if (fichier == NULL) {
-        fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", "\x1B[31m", fichierNom);
-        fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe\n");
-        exit(EXIT_FAILURE);
-    } else {
-        fputs(jsString, fichier);
+    if (fichier == NULL){
+        fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", CL_ROUGE, fichierNom);
+        fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe%s\n", CL_BLANC);
+	    exit(EXIT_FAILURE);
     }
+    else fputs(jsString, fichier);
 
     // 4. nettoyage
     free(jsonString);

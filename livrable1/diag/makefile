@@ -14,6 +14,7 @@ install: diag.static diag.exe
 LIB=-L../build/lib
 INC=-I../include
 
+# ajout de la librairie cJSON pour faciliter l'écriture des fichier
 diag.exe:diag.c
 	gcc $(DEBUG) $(LIB) $(INC) diag.c -o diag.exe -lavalam -lcJSON
 
