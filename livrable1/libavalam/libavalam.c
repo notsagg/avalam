@@ -222,24 +222,3 @@ octet estValide(T_Position p, octet origine, octet destination) {
 	printf("jouerCoup impossible : cases %d et %d inaccessibles! \n", origine, destination);
 	return FAUX;
 }
-
-// MARK: Gestions des erreurs
-/**
-*/
-void throwInput() {
-    fprintf(stderr, "%serreur: entrée non définie\n", "\x1B[31m");
-    exit(EXIT_FAILURE);
-}
-/**
-*/
-void throwFile(char *fichierNom) {
-	fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", CL_ROUGE, fichierNom);
-    fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe%s\n", CL_BLANC);
-	exit(EXIT_FAILURE);
-}
-/**
-*/
-void throw(char *msg) {
-	fprintf(stderr, "%s%s%s\n", CL_ROUGE, msg, CL_BLANC);
-	exit(EXIT_FAILURE);
-}

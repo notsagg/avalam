@@ -40,6 +40,11 @@ int cversi(const char);
 int aiversi(const int*, const int);
 int fenversi(const char);
 
+// Gestions des erreurs
+void throwInput();
+void throwFile(char*);
+void throw(char*);
+
 // MARK: Variables globales
 int trait = 0; // 0 pour vide, 1 pour jaune, 2 pour rouge
 
@@ -364,4 +369,25 @@ int fenversi(const char c) {
         case 'C': return fenversi('c');
         default : return 0;
     }
+}
+
+// MARK: Gestions des erreurs
+/**
+*/
+void throwInput() {
+    fprintf(stderr, "%serreur: entrée non définie\n", "\x1B[31m");
+    exit(EXIT_FAILURE);
+}
+/**
+*/
+void throwFile(char *fichierNom) {
+	fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", CL_ROUGE, fichierNom);
+    fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe%s\n", CL_BLANC);
+	exit(EXIT_FAILURE);
+}
+/**
+*/
+void throw(char *msg) {
+	fprintf(stderr, "%s%s%s\n", CL_ROUGE, msg, CL_BLANC);
+	exit(EXIT_FAILURE);
 }

@@ -191,7 +191,11 @@ void creationjs(T_Position pos, T_Score score, int trait) {
     fichier = fopen(fichierNom, FICHIER_PERM_WRITE);
 
         // b. vérification de la possibilité d'écriture
-    if (fichier == NULL) throwFile(fichierNom);
+    if (fichier == NULL){
+        fprintf(stderr, "%serreur: impossible d'ouvrir le fichier %s\n", CL_ROUGE, fichierNom);
+        fprintf(stderr, "erreur: veuillez vous assurez que le répertoire existe%s\n", CL_BLANC);
+	    exit(EXIT_FAILURE);
+    }
     else fputs(jsString, fichier);
 
     // 4. nettoyage

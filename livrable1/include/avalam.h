@@ -149,11 +149,3 @@ T_Score evaluerScore(T_Position p);
 void afficherScore(T_Score s);
 /// Vérification de la légalité d'un coup
 octet estValide(T_Position p, octet origine, octet destination);
-
-// Gestions des erreurs
-///
-void throwInput();
-///
-void throwFile(char*);
-///
-void throw(char*);
